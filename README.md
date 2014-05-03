@@ -1,13 +1,14 @@
 BabyErubis.rb
 =============
 
+$Release: 0.0.0 $
+
 BabyErubis.rb is an yet another eRuby implementation, based on Erubis.
 
 * Small and fast
+* Easy to customize
 * Supports HTML as well as plain text
 * Accepts both template file and template string
-* (No layout template)
-* (No template cache)
 
 BabyErubis.rb support Ruby 1.9 or higher.
 
