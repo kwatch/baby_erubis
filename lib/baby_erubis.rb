@@ -96,12 +96,12 @@ module BabyErubis
 
     protected
 
-    def escaped_expr(code)  # :abstract:
-      raise NotImplementedError.new("#{self.class.name}#escaped_expr(): not implemented yet.")
+    def escaped_expr(code)
+      return "(#{code}).to_s"
     end
 
-    def new_context(hash)  # :abstract:
-      raise NotImplementedError.new("#{self.class.name}#new_context(): not implemented yet.")
+    def new_context(hash)
+      return TextTemplateContext.new(hash)
     end
 
     private
@@ -118,22 +118,7 @@ module BabyErubis
     end
 
   end
-
-
-  class TextTemplate < Template
-
-    protected
-
-    def escaped_expr(code)
-      return "(#{code}).to_s"
-    end
-
-    def new_context(hash)
-      return TextTemplateContext.new(hash)
-    end
-
-  end
-  Text = TextTemplate
+  Text = Template
 
 
   class HtmlTemplate < Template
@@ -168,8 +153,8 @@ module BabyErubis
       instance_variable_set("@#{key}", value)
     end
 
-    def escape(value)  # :abstract:
-      raise NotImplementedError.new("#{self.class.name}#escape(): not implemented yet.")
+    def escape(value)
+      return value.to_s
     end
 
   end
