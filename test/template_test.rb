@@ -36,7 +36,7 @@ _buf = ''; _buf << 'title: '; _buf << ( @title ).to_s; _buf << '
 '; for item in @items ;
  _buf << '  - '; _buf << ( item ).to_s; _buf << '
 '; end ;
-; _buf.to_s
+ _buf.to_s
 END
       code = template.convert(input)
       assert_equal expected, code
@@ -54,7 +54,7 @@ _buf = ''; _buf << 'who\'s who?
 \'\'\'
 \\w
 \\\\\\
-';; _buf.to_s
+'; _buf.to_s
 END
       assert_equal expected, template.convert(input)
     end
@@ -65,7 +65,7 @@ x = <%= x %>
 END
       expected = <<'END'
 _buf = ''; _buf << 'x = '; _buf << ( x ).to_s; _buf << '
-';; _buf.to_s
+'; _buf.to_s
 END
       assert_equal expected, template.convert(input)
     end
@@ -76,7 +76,7 @@ x = <%== x %>
 END
       expected = <<'END'
 _buf = ''; _buf << 'x = '; _buf << ( x ).to_s; _buf << '
-';; _buf.to_s
+'; _buf.to_s
 END
       assert_equal expected, template.convert(input)
     end
@@ -103,7 +103,7 @@ _buf = '';
 ';
 
  _buf << '
-';; _buf.to_s
+'; _buf.to_s
 END
       assert_equal expected, template.convert(input)
     end
@@ -116,7 +116,7 @@ END
       expected = <<'END'
 _buf = ''; _buf << 'abc
 def
-';; _buf.to_s
+'; _buf.to_s
 END
       assert_equal expected, template.convert(input)
     end
@@ -135,7 +135,7 @@ _buf = '';   for item in items ;
  _buf << '    item = '; _buf << ( item ).to_s; _buf << '
 ';     end ;
    end ;
-; _buf.to_s
+ _buf.to_s
 END
       assert_equal expected, template.convert(input)
     end
@@ -322,7 +322,7 @@ _buf = ''; _buf << '<html>
 ';     end ;
  _buf << '  </ul>
 </html>
-';; _buf.to_s
+'; _buf.to_s
 END
   output = <<'END'
 <html>

@@ -85,7 +85,7 @@ module BabyErubis
       end
       rest = $' || input
       src << _t(rest)
-      src << "; _buf.to_s\n"   # postamble
+      src << " _buf.to_s\n"    # postamble
       return src
     end
 
