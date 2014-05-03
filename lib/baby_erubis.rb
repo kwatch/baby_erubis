@@ -196,10 +196,13 @@ module BabyErubis
   class HtmlTemplateContext < TemplateContext
 
     def escape(value)
-      return value.to_s.gsub(/&/, '&amp;').gsub(/</, '&lt;').gsub(/>/, '&gt;').gsub(/"/, '&quot;').gsub(/'/, '&#39;')
+      #return value.to_s.gsub(/&/, '&amp;').gsub(/</, '&lt;').gsub(/>/, '&gt;').gsub(/"/, '&quot;').gsub(/'/, '&#39;')
+      return value.to_s.gsub(/[<>&"']/, BabyErubis::HTML_ESCAPE)
     end
 
   end
+
+  HTML_ESCAPE = {'&'=>'&amp;', '<'=>'&lt;', '>'=>'&gt;', '"'=>'&quot;', "'"=>'&#39;'}
 
 
 end
