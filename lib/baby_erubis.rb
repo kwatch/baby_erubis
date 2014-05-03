@@ -160,16 +160,27 @@ module BabyErubis
   Html = HtmlTemplate          # for shortcut
 
 
-  class HtmlTemplateContext < TemplateContext
+  module HtmlEscaper
+
+    HTML_ESCAPE = {'&'=>'&amp;', '<'=>'&lt;', '>'=>'&gt;', '"'=>'&quot;', "'"=>'&#39;'}
 
     def escape(value)
-      #return value.to_s.gsub(/&/, '&amp;').gsub(/</, '&lt;').gsub(/>/, '&gt;').gsub(/"/, '&quot;').gsub(/'/, '&#39;')
-      return value.to_s.gsub(/[<>&"']/, BabyErubis::HTML_ESCAPE)
+      return value.to_s.gsub(/[<>&"']/, HTML_ESCAPE)  # for Ruby 1.9 or later
+    end
+
+    if RUBY_VERSION < '1.9'
+      def escape(value)
+        return value.to_s.gsub(/&/, '&amp;').gsub(/</, '&lt;').gsub(/>/, '&gt;').gsub(/"/, '&quot;').gsub(/'/, '&#39;')
+      end
     end
 
   end
 
-  HTML_ESCAPE = {'&'=>'&amp;', '<'=>'&lt;', '>'=>'&gt;', '"'=>'&quot;', "'"=>'&#39;'}
+
+  class HtmlTemplateContext < TemplateContext
+    include HtmlEscaper
+  end
+
 
 
 end
