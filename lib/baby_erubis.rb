@@ -121,22 +121,6 @@ module BabyErubis
   Text = Template
 
 
-  class HtmlTemplate < Template
-
-    protected
-
-    def escaped_expr(code)
-      return "escape(#{code})"   # escape() is defined in HtmlTemplateContext
-    end
-
-    def new_context(hash)
-      return HtmlTemplateContext.new(hash)
-    end
-
-  end
-  Html = HtmlTemplate
-
-
   class TemplateContext
 
     def initialize(vars={})
@@ -158,6 +142,22 @@ module BabyErubis
     end
 
   end
+
+
+  class HtmlTemplate < Template
+
+    protected
+
+    def escaped_expr(code)
+      return "escape(#{code})"   # escape() is defined in HtmlTemplateContext
+    end
+
+    def new_context(hash)
+      return HtmlTemplateContext.new(hash)
+    end
+
+  end
+  Html = HtmlTemplate
 
 
   class HtmlTemplateContext < TemplateContext
