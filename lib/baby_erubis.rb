@@ -118,7 +118,7 @@ module BabyErubis
     end
 
   end
-  Text = Template
+  Text = Template              # for shortcut
 
 
   class TemplateContext
@@ -157,7 +157,7 @@ module BabyErubis
     end
 
   end
-  Html = HtmlTemplate
+  Html = HtmlTemplate          # for shortcut
 
 
   class HtmlTemplateContext < TemplateContext
