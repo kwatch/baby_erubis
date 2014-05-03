@@ -94,14 +94,14 @@ module BabyErubis
       return ctxobj.instance_eval(&@_proc)
     end
 
+    def new_context(hash)
+      return TemplateContext.new(hash)
+    end
+
     protected
 
     def escaped_expr(code)
       return "(#{code}).to_s"
-    end
-
-    def new_context(hash)
-      return TemplateContext.new(hash)
     end
 
     private
