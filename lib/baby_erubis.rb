@@ -80,7 +80,7 @@ module BabyErubis
           if lspace && rspace
             src << "#{lspace} #{code};#{rspace}"
           else
-            src << _t(lspace) << ' ' << code << ';' << _t(rspace)
+            src << _t(lspace) << " #{code};" << _t(rspace)
           end
         end
       end
