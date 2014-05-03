@@ -54,6 +54,11 @@ module BabyErubis
     #EMBED_REXP = /(^[ \t]*)?<%(==?|\#)?(.*?)%>([ \t]*\r?\n)?/m
     EMBED_REXP = /(^[ \t]*)?<%(==?|\#)? ?(.*?) ?%>([ \t]*\r?\n)?/m
 
+    def embed_rexp
+      return EMBED_REXP
+    end
+    protected :embed_rexp
+
     def compile(input, filename=nil, linenum=1)
       src = convert(input)
       @src = src
