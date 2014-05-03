@@ -165,6 +165,8 @@ module BabyErubis
 
     HTML_ESCAPE = {'&'=>'&amp;', '<'=>'&lt;', '>'=>'&gt;', '"'=>'&quot;', "'"=>'&#39;'}
 
+    module_function
+
     def escape(value)
       return value.to_s.gsub(/[<>&"']/, HTML_ESCAPE)  # for Ruby 1.9 or later
     end
