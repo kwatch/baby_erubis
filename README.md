@@ -97,7 +97,7 @@ Example:
 
 
 Customizing
-============
+===========
 
 
 Strip Spaces in HTML Template
@@ -105,7 +105,7 @@ Strip Spaces in HTML Template
 
 Sample code:
 
-    require './lib/baby_erubis'
+    require 'baby_erubis'
 
     class MyTemplate < BabyErubis::Html
 
