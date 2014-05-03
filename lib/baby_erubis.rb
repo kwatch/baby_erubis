@@ -182,5 +182,4 @@ module BabyErubis
   end
 
 
-
 end
