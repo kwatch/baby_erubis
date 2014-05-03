@@ -61,8 +61,6 @@ module BabyErubis
     end
 
     def convert(input)
-      #; [!118pw] converts template string into ruby code.
-      #; [!7ht59] escapes single quotation and backslash characters.
       src = "_buf = '';"       # preamble
       pos = 0
       rexp = EMBED_REXP
@@ -71,9 +69,6 @@ module BabyErubis
         text  = input[pos...match.begin(0)]
         pos   = match.end(0)
         src << _t(text)
-        #; [!u93y5] appends embedded expression in '<%= %>'.
-        #; [!auj95] appends embedded expression in '<%= %>' without escaping.
-        #; [!qveql] appends linefeeds when '<%# %>' found.
         if ch == '='           # expression (escaping)
           src << _t(lspace) << " _buf << #{escaped_expr(code)};" << _t(rspace)
         elsif ch == '=='       # expression (without escaping)
@@ -81,7 +76,6 @@ module BabyErubis
         elsif ch == '#'        # comment
           src << _t(lspace) << ("\n" * code.count("\n")) << _t(rspace)
         else                   # statement
-          #; [!3bx3d] not print extra linefeeds when line starts with '<%' and ends with '%>'
           if lspace && rspace
             src << "#{lspace}#{code};#{rspace}"
           else
@@ -89,7 +83,6 @@ module BabyErubis
           end
         end
       end
-      #; [!b10ns] generates ruby code correctly even when no embedded code.
       rest = $' || input
       src << _t(rest)
       src << "; _buf.to_s\n"   # postamble
@@ -162,8 +155,6 @@ module BabyErubis
   class TemplateContext
 
     def initialize(vars={})
-      #; [!p69q1] takes hash object and sets them into instance variables.
-      #; [!p853f] do nothing when vars is nil.
       vars.each do |k, v|
         instance_variable_set("@#{k}", v)
       end if vars
