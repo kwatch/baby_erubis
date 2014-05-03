@@ -86,9 +86,9 @@ describe 'BabyErubis::HtmlTemplateContext' do
   describe '#escape()' do
 
     it "escapes html special chars." do
-      assert_equal '&lt;&gt;&amp;&quot;&#39;', ctx.escape('<>&"\'')
+      assert_equal '&lt;&gt;&amp;&quot;&#39;', ctx.__send__(:escape, '<>&"\'')
       assert_equal '&lt;a href=&quot;?x=1&amp;y=2&amp;z=3&quot;&gt;click&lt;/a&gt;',
-                   ctx.escape('<a href="?x=1&y=2&z=3">click</a>')
+                   ctx.__send__(:escape, '<a href="?x=1&y=2&z=3">click</a>')
     end
 
   end
