@@ -54,6 +54,11 @@ module BabyErubis
     #EMBED_REXP = /(^[ \t]*)?<%(==?|\#)?(.*?)%>([ \t]*\r?\n)?/m
     EMBED_REXP = /(^[ \t]*)?<%(==?|\#)? ?(.*?) ?%>([ \t]*\r?\n)?/m
 
+    def embed_rexp
+      return EMBED_REXP
+    end
+    protected :embed_rexp
+
     def compile(input, filename=nil, linenum=1)
       src = convert(input)
       @src = src
@@ -64,7 +69,7 @@ module BabyErubis
     def convert(input)
       src = "_buf = '';"       # preamble
       pos = 0
-      rexp = EMBED_REXP
+      rexp = embed_rexp()
       input.scan(rexp) do |lspace, ch, code, rspace|
         match = Regexp.last_match
         text  = input[pos...match.begin(0)]
