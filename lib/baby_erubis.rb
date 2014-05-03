@@ -101,7 +101,7 @@ module BabyErubis
     end
 
     def new_context(hash)
-      return TextTemplateContext.new(hash)
+      return TemplateContext.new(hash)
     end
 
     private
@@ -152,15 +152,6 @@ module BabyErubis
     def []=(key, value)
       instance_variable_set("@#{key}", value)
     end
-
-    def escape(value)
-      return value.to_s
-    end
-
-  end
-
-
-  class TextTemplateContext < TemplateContext
 
     def escape(value)
       return value.to_s
