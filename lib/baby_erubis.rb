@@ -51,7 +51,8 @@ module BabyErubis
 
     attr_reader :src
 
-    EMBED_REXP = /(^[ \t]*)?<%(==?|\#)?(.*?)%>([ \t]*\r?\n)?/m
+    #EMBED_REXP = /(^[ \t]*)?<%(==?|\#)?(.*?)%>([ \t]*\r?\n)?/m
+    EMBED_REXP = /(^[ \t]*)?<%(==?|\#)? ?(.*?) ?%>([ \t]*\r?\n)?/m
 
     def compile(input, filename=nil, linenum=1)
       src = convert(input)
@@ -77,9 +78,9 @@ module BabyErubis
           src << _t(lspace) << ("\n" * code.count("\n")) << _t(rspace)
         else                   # statement
           if lspace && rspace
-            src << "#{lspace}#{code};#{rspace}"
+            src << "#{lspace} #{code};#{rspace}"
           else
-            src << _t(lspace) << code << ';' << _t(rspace)
+            src << _t(lspace) << ' ' << code << ';' << _t(rspace)
           end
         end
       end
