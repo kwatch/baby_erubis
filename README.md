@@ -100,6 +100,39 @@ Customizing
 ===========
 
 
+Change Embed Pattern from '<% %>' to '{% %}'
+--------------------------------------------
+
+Sample code:
+
+    require 'baby_erubis'
+
+    class MyTemplate < BabyErubis::Html
+
+      rexp = BabyErubis::Template::EMBED_REXP
+      NEW_EMBED_REXP = Regexp.compile(rexp.to_s.sub(/<%/, '\{%').sub(/%>/, '%\}'))
+
+      def embed_rexp
+        NEW_EMBED_REXP
+      end
+
+    end
+
+    template = MyTemplate.new <<-'END'
+    {% for item in @items %}
+    - {%= item %}
+    {% end %}
+    END
+
+    print template.render(:items=>['A', 'B', 'C'])
+
+Output:
+
+    - A
+    - B
+    - C
+
+
 Strip Spaces in HTML Template
 -----------------------------
 
