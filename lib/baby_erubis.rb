@@ -18,19 +18,20 @@
 ##
 ## Example:
 ##
-##   ## render template file
-##   templat = BabyErubis::Html.load('example.html.erb', 'utf-8')
-##   context = {:title=>'Example', :items=>['<AAA>', 'B&B', '"CCC"']}
-##   output = template.render(context)
-##   print output
-##
 ##   ## render template string
 ##   template = BabyErubis::Html.new <<'END', __FILE__, __LINE__+1
+##     <h1><%= @title %></h1>
 ##     <% for item in @items %>
 ##       <p><%= item %></p>
 ##     <% end %>
 ##   END
-##   context = {:items=>['<AAA>', 'B&B', '"CCC"']}
+##   context = {:title=>'Example', :items=>['<AAA>', 'B&B', '"CCC"']}
+##   output = template.render(context)
+##   print output
+##
+##   ## render template file
+##   templat = BabyErubis::Html.load('example.html.erb', 'utf-8')
+##   context = {:title=>'Example', :items=>['<AAA>', 'B&B', '"CCC"']}
 ##   output = template.render(context)
 ##   print output
 ##
