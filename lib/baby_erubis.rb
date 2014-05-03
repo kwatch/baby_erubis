@@ -11,10 +11,9 @@
 ## Yet another eRuby implementation, based on Erubis.
 ##
 ## * Small and fast
+## * Easy to customize
 ## * Supports HTML as well as plain text
 ## * Accepts both template file and template string
-## * (No layout template)
-## * (No template cache)
 ##
 ## Example:
 ##
