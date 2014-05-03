@@ -96,12 +96,12 @@ module BabyErubis
 
     protected
 
-    def escaped_expr(code)  # :abstract:
-      raise NotImplementedError.new("#{self.class.name}#escaped_expr(): not implemented yet.")
+    def escaped_expr(code)
+      return "(#{code}).to_s"
     end
 
-    def new_context(hash)  # :abstract:
-      raise NotImplementedError.new("#{self.class.name}#new_context(): not implemented yet.")
+    def new_context(hash)
+      return TemplateContext.new(hash)
     end
 
     private
@@ -118,38 +118,7 @@ module BabyErubis
     end
 
   end
-
-
-  class TextTemplate < Template
-
-    protected
-
-    def escaped_expr(code)
-      return "(#{code}).to_s"
-    end
-
-    def new_context(hash)
-      return TextTemplateContext.new(hash)
-    end
-
-  end
-  Text = TextTemplate
-
-
-  class HtmlTemplate < Template
-
-    protected
-
-    def escaped_expr(code)
-      return "escape(#{code})"   # escape() is defined in HtmlTemplateContext
-    end
-
-    def new_context(hash)
-      return HtmlTemplateContext.new(hash)
-    end
-
-  end
-  Html = HtmlTemplate
+  Text = Template              # for shortcut
 
 
   class TemplateContext
@@ -168,20 +137,27 @@ module BabyErubis
       instance_variable_set("@#{key}", value)
     end
 
-    def escape(value)  # :abstract:
-      raise NotImplementedError.new("#{self.class.name}#escape(): not implemented yet.")
-    end
-
-  end
-
-
-  class TextTemplateContext < TemplateContext
-
     def escape(value)
       return value.to_s
     end
 
   end
+
+
+  class HtmlTemplate < Template
+
+    protected
+
+    def escaped_expr(code)
+      return "escape(#{code})"   # escape() is defined in HtmlTemplateContext
+    end
+
+    def new_context(hash)
+      return HtmlTemplateContext.new(hash)
+    end
+
+  end
+  Html = HtmlTemplate          # for shortcut
 
 
   class HtmlTemplateContext < TemplateContext

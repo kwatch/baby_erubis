@@ -17,6 +17,8 @@ require 'baby_erubis'
 
 describe 'BabyErubis::TemplateContext' do
 
+  let(:ctx) { BabyErubis::TemplateContext.new }
+
 
   describe '#initialize()' do
 
@@ -54,15 +56,6 @@ describe 'BabyErubis::TemplateContext' do
     end
 
   end
-
-
-end
-
-
-
-describe 'BabyErubis::TextTemplateContext' do
-
-  let(:ctx) { BabyErubis::TextTemplateContext.new }
 
 
   describe '#escape()' do

@@ -24,13 +24,17 @@ describe BabyErubis::Template do
 
     it "[!118pw] converts template string into ruby code." do
       input = <<'END'
-<% for x in (1..3) %>
-  i=<%= i %>
+title: <%= @title %>
+items:
+<% for item in @items %>
+  - <%= item %>
 <% end %>
 END
       expected = <<'END'
-_buf = ''; for x in (1..3) ;
- _buf << '  i='; _buf << ( i ).to_s; _buf << '
+_buf = ''; _buf << 'title: '; _buf << ( @title ).to_s; _buf << '
+'; _buf << 'items:
+'; for item in @items ;
+ _buf << '  - '; _buf << ( item ).to_s; _buf << '
 '; end ;
 ; _buf.to_s
 END
@@ -143,10 +147,10 @@ END
 
     it "renders template with context values." do
       input = <<'END'
-title: <%= @title %>
+title: <%== @title %>
 items:
 <% for item in @items %>
-  - <%= item %>
+  - <%== item %>
 <% end %>
 END
       expected = <<'END'
@@ -158,6 +162,27 @@ items:
 END
       context = {:title=>'Example', :items=>['<AAA>', 'B&B', '"CCC"']}
       output = template.compile(input).render(context)
+      assert_equal expected, output
+    end
+
+    it "renders context values with no escaping." do
+      input = <<'END'
+title: <%= @title %>
+items:
+<% for item in @items %>
+  - <%= item %>
+<% end %>
+END
+      expected = <<'END'
+title: <b>Example</b>
+items:
+  - <AAA>
+  - B&B
+  - "CCC"
+END
+      tmpl = BabyErubis::Text.new(input)
+      context = {:title=>'<b>Example</b>', :items=>['<AAA>', 'B&B', '"CCC"']}
+      output = tmpl.render(context)
       assert_equal expected, output
     end
 
@@ -237,7 +262,7 @@ END
       tmpfile = "test.#{rand()}.erb"
       File.open(tmpfile, 'wb') {|f| f.write(input) }
       begin
-        template = BabyErubis::TextTemplate.load(tmpfile)
+        template = BabyErubis::Text.load(tmpfile)
         context = {:title=>'Example', :items=>['<AAA>', 'B&B', '"CCC"']}
         output = template.render(context)
         assert_equal expected, output
@@ -253,69 +278,18 @@ END
       File.open(tmpfile, 'wb:utf-8') {|f| f.write(input) }
       begin
         # nothing should be raised
-        template = BabyErubis::TextTemplate.load(tmpfile, 'utf-8')
+        template = BabyErubis::Text.load(tmpfile, 'utf-8')
         output = template.render(:title=>"サンプル")
         assert_equal expected, output
         assert_equal 'UTF-8', output.encoding.name
         # exception should be raised
         ex = assert_raises ArgumentError do
-          template = BabyErubis::TextTemplate.load(tmpfile, 'us-ascii')
+          template = BabyErubis::Text.load(tmpfile, 'us-ascii')
         end
         assert_equal "invalid byte sequence in US-ASCII", ex.message
       ensure
         File.unlink(tmpfile) if File.exist?(tmpfile)
       end
-    end
-
-  end
-
-
-end
-
-
-
-describe BabyErubis::TextTemplate do
-
-  input = <<'END'
-title: <%= @title %>
-items:
-<% for item in @items %>
-  - <%= item %>
-<% end %>
-END
-  source = <<'END'
-_buf = ''; _buf << 'title: '; _buf << ( @title ).to_s; _buf << '
-'; _buf << 'items:
-'; for item in @items ;
- _buf << '  - '; _buf << ( item ).to_s; _buf << '
-'; end ;
-; _buf.to_s
-END
-  output = <<'END'
-title: Example
-items:
-  - <AAA>
-  - B&B
-  - "CCC"
-END
-
-
-  describe '#convert()' do
-
-    it "handles embedded expression with no escaping." do
-      tmpl = BabyErubis::Text.new(input)
-      assert_equal source, tmpl.src
-    end
-
-  end
-
-
-  describe '#render()' do
-
-    it "renders context values with no escaping." do
-      tmpl = BabyErubis::Text.new(input)
-      context = {:title=>'Example', :items=>['<AAA>', 'B&B', '"CCC"']}
-      assert_equal output, tmpl.render(context)
     end
 
   end
