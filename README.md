@@ -70,6 +70,7 @@ Example:
     require 'baby_erubis'
 
     class MyApp
+      include BabyErubis::HtmlEscaper  # necessary to define escape()
 
       TEMPLATE = BabyErubis::Html.new <<-'END', __FILE__, __LINE__+1
         <html>
@@ -85,10 +86,6 @@ Example:
 
       def render()
         return TEMPLATE.render(self)
-      end
-
-      def escape(value)   # necessary!!
-        return value.to_s.gsub(/[<>&"']/, BabyErubis::HTML_ESCAPE)
       end
 
     end
@@ -146,6 +143,7 @@ Sample code:
     require 'baby_erubis'
 
     class MyApp
+      include BabyErubis::HtmlEscaper  # necessary to define escape()
 
       LAYOUT = BabyErubis::Html.new <<-'END', __FILE__, __LINE__+1
         <html>
@@ -167,10 +165,6 @@ Sample code:
       def render()
         @_content = TEMPLATE.render(self)
         return LAYOUT.render(self)
-      end
-
-      def escape(value)   # necessary!!
-        return value.to_s.gsub(/[<>&"']/, BabyErubis::HTML_ESCAPE)
       end
 
     end
