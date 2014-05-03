@@ -148,8 +148,7 @@ Sample code:
       LAYOUT = BabyErubis::Html.new <<-'END', __FILE__, __LINE__+1
         <html>
           <body>
-
-        <%== @_content %>
+            <% _buf << @_content %>    # or <%== @_content %>
           </body>
         </html>
       END
@@ -177,9 +176,7 @@ Output:
 
       <html>
         <body>
-
               <p>Hello World!</p>
-
         </body>
       </html>
 
