@@ -52,7 +52,7 @@ module BabyErubis
     attr_reader :src
 
     #EMBED_REXP = /(^[ \t]*)?<%(==?|\#)?(.*?)%>([ \t]*\r?\n)?/m
-    EMBED_REXP = /(^[ \t]*)?<%(==? ?|\#)?(.*?) ?%>([ \t]*\r?\n)?/m
+    EMBED_REXP = /(^[ \t]*)?<%(==?|\#)? ?(.*?) ?%>([ \t]*\r?\n)?/m
 
     def compile(input, filename=nil, linenum=1)
       src = convert(input)
@@ -70,7 +70,6 @@ module BabyErubis
         text  = input[pos...match.begin(0)]
         pos   = match.end(0)
         src << _t(text)
-        ch.rstrip! if ch
         if ch == '='           # expression (escaping)
           src << _t(lspace) << " _buf << #{escaped_expr(code)};" << _t(rspace)
         elsif ch == '=='       # expression (without escaping)
@@ -79,9 +78,9 @@ module BabyErubis
           src << _t(lspace) << ("\n" * code.count("\n")) << _t(rspace)
         else                   # statement
           if lspace && rspace
-            src << "#{lspace}#{code};#{rspace}"
+            src << "#{lspace} #{code};#{rspace}"
           else
-            src << _t(lspace) << code << ';' << _t(rspace)
+            src << _t(lspace) << ' ' << code << ';' << _t(rspace)
           end
         end
       end
