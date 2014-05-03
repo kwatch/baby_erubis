@@ -31,11 +31,11 @@ items:
 <% end %>
 END
       expected = <<'END'
-_buf = ''; _buf << 'title: '; _buf << ( @title ).to_s; _buf << '
+_buf = ''; _buf << 'title: '; _buf << (@title).to_s; _buf << '
 '; _buf << 'items:
-'; for item in @items ;
- _buf << '  - '; _buf << ( item ).to_s; _buf << '
-'; end ;
+'; for item in @items;
+ _buf << '  - '; _buf << (item).to_s; _buf << '
+'; end;
  _buf.to_s
 END
       code = template.convert(input)
@@ -64,7 +64,7 @@ END
 x = <%= x %>
 END
       expected = <<'END'
-_buf = ''; _buf << 'x = '; _buf << ( x ).to_s; _buf << '
+_buf = ''; _buf << 'x = '; _buf << (x).to_s; _buf << '
 '; _buf.to_s
 END
       assert_equal expected, template.convert(input)
@@ -75,7 +75,7 @@ END
 x = <%== x %>
 END
       expected = <<'END'
-_buf = ''; _buf << 'x = '; _buf << ( x ).to_s; _buf << '
+_buf = ''; _buf << 'x = '; _buf << (x).to_s; _buf << '
 '; _buf.to_s
 END
       assert_equal expected, template.convert(input)
@@ -130,11 +130,11 @@ END
   <% end %>
 END
       expected = <<'END'
-_buf = '';   for item in items ;
-     if item ;
- _buf << '    item = '; _buf << ( item ).to_s; _buf << '
-';     end ;
-   end ;
+_buf = '';   for item in items;
+     if item;
+ _buf << '    item = '; _buf << (item).to_s; _buf << '
+';     end;
+   end;
  _buf.to_s
 END
       assert_equal expected, template.convert(input)
@@ -314,12 +314,12 @@ describe BabyErubis::HtmlTemplate do
 END
   source = <<'END'
 _buf = ''; _buf << '<html>
-  <h1>'; _buf << escape( @title ); _buf << '</h1>
+  <h1>'; _buf << escape(@title); _buf << '</h1>
   <ul>
-';     for item in @items ;
- _buf << '    <!-- '; _buf << ( item ).to_s; _buf << ' -->
-    <li>'; _buf << escape( item ); _buf << '</li>
-';     end ;
+';     for item in @items;
+ _buf << '    <!-- '; _buf << (item).to_s; _buf << ' -->
+    <li>'; _buf << escape(item); _buf << '</li>
+';     end;
  _buf << '  </ul>
 </html>
 '; _buf.to_s
