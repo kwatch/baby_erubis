@@ -69,7 +69,7 @@ module BabyErubis
     def convert(input)
       src = "_buf = '';"       # preamble
       pos = 0
-      rexp = EMBED_REXP
+      rexp = embed_rexp()
       input.scan(rexp) do |lspace, ch, code, rspace|
         match = Regexp.last_match
         text  = input[pos...match.begin(0)]
