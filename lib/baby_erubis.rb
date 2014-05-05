@@ -64,7 +64,7 @@ module BabyErubis
     def compile(input, filename=nil, linenum=1)
       src = convert(input)
       @src = src
-      @_proc = eval("proc { #{src} }", TOPLEVEL_BINDING, filename || '(eRuby)', linenum)
+      @proc = eval("proc { #{src} }", empty_binding(), filename || '(eRuby)', linenum)
       return self
     end
 
@@ -101,7 +101,7 @@ module BabyErubis
 
     def render(context={})
       ctxobj = context.is_a?(Hash) ? new_context(context) : context
-      return ctxobj.instance_eval(&@_proc)
+      return ctxobj.instance_eval(&@proc)
     end
 
     def new_context(hash)
@@ -126,6 +126,10 @@ module BabyErubis
     def escape_text(text)
       return text.gsub!(/['\\]/, '\\\\\&') || text
       #return text.gsub!(/[`\\]/, '\\\\\&') || text
+    end
+
+    def empty_binding
+      return binding()
     end
 
   end

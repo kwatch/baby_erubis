@@ -231,7 +231,7 @@ END
     it "compiles template string into proc object." do
       assert_nil template.instance_variable_get('@_proc')
       template.compile("x=<%= x %>")
-      assert_kind_of Proc, template.instance_variable_get('@_proc')
+      assert_kind_of Proc, template.instance_variable_get('@proc')
     end
 
     it "returns self." do
