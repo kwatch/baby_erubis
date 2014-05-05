@@ -10,29 +10,7 @@
 ##
 ## Yet another eRuby implementation, based on Erubis.
 ##
-## * Small and fast
-## * Easy to customize
-## * Supports HTML as well as plain text
-## * Accepts both template file and template string
-##
-## Example:
-##
-##   ## render template string
-##   template = BabyErubis::Html.new.from_str <<'END', __FILE__, __LINE__+1
-##     <h1><%= @title %></h1>
-##     <% for item in @items %>
-##       <p><%= item %></p>
-##     <% end %>
-##   END
-##   context = {:title=>'Example', :items=>['<AAA>', 'B&B', '"CCC"']}
-##   output = template.render(context)
-##   print output
-##
-##   ## render template file
-##   templat = BabyErubis::Html.new.from_file('example.html.erb', 'utf-8')
-##   context = {:title=>'Example', :items=>['<AAA>', 'B&B', '"CCC"']}
-##   output = template.render(context)
-##   print output
+## See https://github.com/kwatch/BabyErubis/tree/ruby for details.
 ##
 
 module BabyErubis
