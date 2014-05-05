@@ -47,8 +47,7 @@ module BabyErubis
       return self.class.const_get(:PATTERN)
     end
 
-    def compile(input, filename=nil, linenum=1)
-      src = convert(input)
+    def compile(src, filename=nil, linenum=1)
       @src = src
       @proc = eval("proc { #{src} }", empty_binding(), filename || '(eRuby)', linenum)
       return self
