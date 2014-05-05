@@ -28,9 +28,9 @@ describe BabyErubis::Template do
   let(:template) { BabyErubis::Text.new() }
 
 
-  describe '#convert()' do
+  describe '#parse()' do
 
-    it "[!118pw] converts template string into ruby code." do
+    it "[!118pw] parses template string into ruby code." do
       input = <<'END'
 title: <%= @title %>
 items:
@@ -47,7 +47,7 @@ _buf = ''; _buf << 'title: '; _buf << (@title).to_s; _buf << '
  _buf.to_s
 END
       expected = _modify(expected)
-      code = template.convert(input)
+      code = template.parse(input)
       assert_equal expected, code
     end
 
@@ -66,7 +66,7 @@ _buf = ''; _buf << 'who\'s who?
 '; _buf.to_s
 END
       expected = _modify(expected)
-      assert_equal expected, template.convert(input)
+      assert_equal expected, template.parse(input)
     end
 
     it "[!u93y5] appends embedded expression in '<%= %>'." do
@@ -78,7 +78,7 @@ _buf = ''; _buf << 'x = '; _buf << (x).to_s; _buf << '
 '; _buf.to_s
 END
       expected = _modify(expected)
-      assert_equal expected, template.convert(input)
+      assert_equal expected, template.parse(input)
     end
 
     it "[!auj95] appends embedded expression in '<%= %>' without escaping." do
@@ -90,7 +90,7 @@ _buf = ''; _buf << 'x = '; _buf << (x).to_s; _buf << '
 '; _buf.to_s
 END
       expected = _modify(expected)
-      assert_equal expected, template.convert(input)
+      assert_equal expected, template.parse(input)
     end
 
     it "[!qveql] appends linefeeds when '<%# %>' found." do
@@ -118,7 +118,7 @@ _buf = '';
 '; _buf.to_s
 END
       expected = _modify(expected)
-      assert_equal expected, template.convert(input)
+      assert_equal expected, template.parse(input)
     end
 
     it "[!b10ns] generates ruby code correctly even when no embedded code." do
@@ -132,7 +132,7 @@ def
 '; _buf.to_s
 END
       expected = _modify(expected)
-      assert_equal expected, template.convert(input)
+      assert_equal expected, template.parse(input)
     end
 
     it "[!3bx3d] not print extra linefeeds when line starts with '<%' and ends with '%>'" do
@@ -152,7 +152,7 @@ _buf = '';   for item in items;
  _buf.to_s
 END
       expected = _modify(expected)
-      assert_equal expected, template.convert(input)
+      assert_equal expected, template.parse(input)
     end
 
     it "handles '<%- -%>' (but do nothing)." do
@@ -168,21 +168,21 @@ _buf = '';   for item in @items;
  _buf.to_s
 END
       expected = _modify(expected)
-      assert_equal expected, template.convert(input)
+      assert_equal expected, template.parse(input)
     end
 
     it "uses String#freeze forcedly when ':freeze=>true' passed to constructor." do
       input = "value=<%== value %>"
       expected = "_buf = ''; _buf << 'value='.freeze; _buf << (value).to_s; _buf.to_s\n"
       template = BabyErubis::Text.new(:freeze=>true)
-      assert_equal expected, template.convert(input)
+      assert_equal expected, template.parse(input)
     end
 
     it "doesn't use String#freeze when ':freeze=>false' passed to constructor." do
       input = "value=<%== value %>"
       expected = "_buf = ''; _buf << 'value='; _buf << (value).to_s; _buf.to_s\n"
       template = BabyErubis::Text.new(:freeze=>false)
-      assert_equal expected, template.convert(input)
+      assert_equal expected, template.parse(input)
     end
 
   end
@@ -405,7 +405,7 @@ END
 END
 
 
-  describe '#convert()' do
+  describe '#parse()' do
 
     it "handles embedded expression with escaping." do
       tmpl = BabyErubis::Html.new.from_str(input)
