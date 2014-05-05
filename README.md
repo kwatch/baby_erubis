@@ -99,6 +99,42 @@ Example:
 
 
 
+Advanced Topics
+===============
+
+
+String#freeze()
+---------------
+
+BabyErubis supports String#freeze() automatically when Ruby version >= 2.1.
+And you can controll whether to use freeze() or not.
+
+    template_str = <<'END'
+    <div>
+    <b><%= message %></b>
+    </div>
+    END
+
+    ## don't use freeze()
+    t = BabyErubis::Text.new(:freeze=>false).from_str(template_str)
+    print t.src
+    # --- result ---
+    # _buf = ''; _buf << '<div>
+    # <b>'; _buf << (message).to_s; _buf << '</b>
+    # </div>
+    # '; _buf.to_s
+
+    ## use freeze() forcedly
+    t = BabyErubis::Text.new(:freeze=>true).from_str(template_str)
+    print t.src
+    # --- result ---
+    # _buf = ''; _buf << '<div>
+    # <b>'.freeze; _buf << (message).to_s; _buf << '</b>
+    # </div>
+    # '.freeze; _buf.to_s
+
+
+
 Customizing
 ===========
 
