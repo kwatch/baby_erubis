@@ -77,18 +77,20 @@ module BabyErubis
         text  = input[pos, match.begin(0) - pos]
         pos   = match.end(0)
         src << _t(text)
-        if ch == '='           # expression (escaping)
-          src << _t(lspace) << " _buf << #{escaped_expr(code)};" << _t(rspace)
-        elsif ch == '=='       # expression (without escaping)
-          src << _t(lspace) << " _buf << (#{code}).to_s;" << _t(rspace)
-        elsif ch == '#'        # comment
-          src << _t(lspace) << ("\n" * code.count("\n")) << _t(rspace)
-        else                   # statement
+        if ! ch                # statement
           if lspace && rspace
             src << "#{lspace} #{code};#{rspace}"
           else
             src << _t(lspace) << " #{code};" << _t(rspace)
           end
+        elsif ch == '='        # expression (escaping)
+          src << _t(lspace) << " _buf << #{escaped_expr(code)};" << _t(rspace)
+        elsif ch == '=='       # expression (without escaping)
+          src << _t(lspace) << " _buf << (#{code}).to_s;" << _t(rspace)
+        elsif ch == '#'        # comment
+          src << _t(lspace) << ("\n" * code.count("\n")) << _t(rspace)
+        else
+          raise "** unreachable: ch=#{ch.inspect}"
         end
       end
       rest = $' || input
