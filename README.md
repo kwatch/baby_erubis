@@ -253,6 +253,45 @@ Output:
       </html>
 
 
+Template Cache File
+-------------------
+
+Sample code:
+
+    require 'baby_erubis'
+    require 'logger'
+
+    $logger = Logger.new(STDERR)
+
+    class MyTemplate < BabyErubis::Html
+
+      def from_file(filename, encoding='utf-8')
+        cachefile = "#{filename}.cache"
+        timestamp = File.mtime(filename)
+        has_cache = File.file?(cachefile) && File.mtime(cachefile) == timestamp
+        if has_cache
+          $logger.info("loading template from cache file: #{cachefile}")
+          ruby_code = File.open(cachefile, "rb:#{encoding}") {|f| f.read }
+          compile(ruby_code, filename, 1)
+        else
+          super(filename, encoding)
+          $logger.info("creating template cache file: #{cachefile}")
+          ruby_code = self.src
+          tmpname = "#{cachefile}.#{rand().to_s[2,5]}"
+          File.open(tmpname, "wb:#{encoding}") {|f| f.write(ruby_code) }
+          File.utime(timestamp, timestamp, tmpname)
+          File.rename(tmpname, cachefile)
+        end
+        return self
+      end
+
+    end
+
+    p File.exist?('example.html.erb.cache')   #=> false
+    t = MyTemplate.new.from_file('example.html.erb')
+    p File.exist?('example.html.erb.cache')   #=> true
+
+
 
 License
 =======

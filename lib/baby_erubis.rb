@@ -29,12 +29,12 @@ module BabyErubis
 
     def from_file(filename, encoding='utf-8')
       input = File.open(filename, "rb:#{encoding}") {|f| f.read() }
-      compile(input, filename, 1)
+      compile(convert(input), filename, 1)
       return self
     end
 
     def from_str(input, filename=nil, linenum=1)
-      compile(input, filename, linenum)
+      compile(convert(input), filename, linenum)
       return self
     end
 
@@ -47,8 +47,7 @@ module BabyErubis
       return self.class.const_get(:PATTERN)
     end
 
-    def compile(input, filename=nil, linenum=1)
-      src = convert(input)
+    def compile(src, filename=nil, linenum=1)
       @src = src
       @proc = eval("proc { #{src} }", empty_binding(), filename || '(eRuby)', linenum)
       return self

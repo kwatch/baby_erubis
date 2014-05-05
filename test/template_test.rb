@@ -226,7 +226,7 @@ items:
   - "CCC"
 END
       context = {:title=>'Example', :items=>['<AAA>', 'B&B', '"CCC"']}
-      output = template.compile(input).render(context)
+      output = template.from_str(input).render(context)
       assert_equal expected, output
     end
 
@@ -269,7 +269,7 @@ END
       obj = Object.new
       obj.instance_variable_set('@title', 'Example')
       obj.instance_variable_set('@items', ['<AAA>', 'B&B', '"CCC"'])
-      output = template.compile(input).render(obj)
+      output = template.from_str(input).render(obj)
       assert_equal expected, output
     end
 
@@ -278,19 +278,19 @@ END
 
   describe '#compile()' do
 
-    it "compiles template string into proc object." do
+    it "compiles ruby code into proc object." do
       assert_nil template.instance_variable_get('@_proc')
-      template.compile("x=<%= x %>")
+      template.compile("_buf = ''; _buf << (x).to_s; _buf")
       assert_kind_of Proc, template.instance_variable_get('@proc')
     end
 
     it "returns self." do
-      assert_same template, template.compile("x=<%= x %>")
+      assert_same template, template.compile("_buf = ''; _buf << (x).to_s; _buf")
     end
 
     it "takes filename and linenum." do
       begin
-        template.compile("x=<%= do end %>", 'example.erb', 3)
+        template.compile("_buf = ''; _buf << (x).to_s; _buf", 'example.erb', 3)
       rescue SyntaxError => ex
         assert_match /\Aexample\.erb:3: syntax error/, ex.message
       end
@@ -298,7 +298,7 @@ END
 
     it "uses '(eRuby)' as default filename and 1 as default linenum." do
       begin
-        template.compile("x=<%= do end %>")
+        template.compile("_buf = ''; _buf << (x).to_s; _buf")
       rescue SyntaxError => ex
         assert_match /\A\(eRuby\):1: syntax error/, ex.message
       end
