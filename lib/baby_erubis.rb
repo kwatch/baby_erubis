@@ -68,7 +68,6 @@ module BabyErubis
     def pattern
       return PATTERN
     end
-    protected :pattern
 
     def compile(input, filename=nil, linenum=1)
       src = convert(input)
@@ -80,8 +79,7 @@ module BabyErubis
     def convert(input)
       src = "_buf = '';"       # preamble
       pos = 0
-      rexp = pattern()
-      input.scan(rexp) do |lspace, ch, code, rspace|
+      input.scan(pattern()) do |lspace, ch, code, rspace|
         match = Regexp.last_match
         text  = input[pos, match.begin(0) - pos]
         pos   = match.end(0)
