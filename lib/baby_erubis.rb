@@ -66,7 +66,7 @@ module BabyErubis
     PATTERN = /(^[ \t]*)?<%(==?|\#)? ?(.*?) ?%>([ \t]*\r?\n)?/m
 
     def pattern
-      return PATTERN
+      return self.class.const_get(:PATTERN)
     end
 
     def compile(input, filename=nil, linenum=1)

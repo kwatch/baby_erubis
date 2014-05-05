@@ -172,6 +172,26 @@ END
   end
 
 
+  describe '#pattern()' do
+
+    it "returns default embed pattern." do
+      template = BabyErubis::Template.new
+      assert_equal BabyErubis::Template::PATTERN, template.pattern
+    end
+
+    it "returns new embed pattern when overrided in subclass." do
+      class FooTemplate < BabyErubis::Template
+        rexp = BabyErubis::Template::PATTERN
+        PATTERN = Regexp.compile(rexp.to_s.sub(/<%/, '\{%').sub(/%>/, '%\}'))
+      end
+      template = FooTemplate.new
+      refute_equal BabyErubis::Template::PATTERN, template.pattern
+      assert_equal FooTemplate::PATTERN, template.pattern
+    end
+
+  end
+
+
   describe '#render()' do
 
     it "renders template with context values." do
