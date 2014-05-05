@@ -53,7 +53,7 @@ module BabyErubis
       return self
     end
 
-    def convert(input)
+    def parse(input)
       src = "_buf = '';"       # preamble
       pos = 0
       input.scan(pattern()) do |lspace, ch, code, rspace|
