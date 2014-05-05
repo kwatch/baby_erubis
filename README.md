@@ -3,14 +3,14 @@ BabyErubis.rb
 
 $Release: 0.0.0 $
 
-BabyErubis.rb is an yet another eRuby implementation, based on Erubis.
+BabyErubis is an yet another eRuby implementation, based on Erubis.
 
 * Small and fast
 * Easy to customize
 * Supports HTML as well as plain text
 * Accepts both template file and template string
 
-BabyErubis.rb support Ruby 1.9 or higher.
+BabyErubis support Ruby 1.9 or higher.
 
 
 
@@ -45,9 +45,9 @@ Render template file:
 Template Syntax
 ===============
 
-* <% ... %> : Ruby statement
-* <%= ... %> : Ruby expression with escaping
-* <%== ... %> : Ruby expression without escaping
+* `<% ... %>` : Ruby statement
+* `<%= ... %>` : Ruby expression with escaping
+* `<%== ... %>` : Ruby expression without escaping
 
 Expression in `<%= ... %>` is escaped according to template class.
 
@@ -55,6 +55,9 @@ Expression in `<%= ... %>` is escaped according to template class.
   It justs converts expression into a string.
 * `BabyErubis::Html` escapes html special characters.
   It converts '< > & " \'' into '&lt; &gt; &amp; &quot; &#39;' respectively.
+
+(Experimental) `<%- ... -%>` and `<%-= ... -%>` are handled same as
+`<% ... %>` and `<%= ... %>` respectively.
 
 
 
