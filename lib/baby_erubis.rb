@@ -74,7 +74,7 @@ module BabyErubis
       rexp = embed_rexp()
       input.scan(rexp) do |lspace, ch, code, rspace|
         match = Regexp.last_match
-        text  = input[pos...match.begin(0)]
+        text  = input[pos, match.begin(0) - pos]
         pos   = match.end(0)
         src << _t(text)
         if ch == '='           # expression (escaping)
