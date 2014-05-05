@@ -23,7 +23,7 @@ module BabyErubis
     def initialize(opts=nil)
       @freeze = self.class.const_get(:FREEZE)
       if opts
-        @freeze = opts.fetch(:freeze, @freeze)
+        @freeze = (v=opts[:freeze]) != nil ? v : @freeze
       end
     end
 
