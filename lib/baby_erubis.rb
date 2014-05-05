@@ -42,6 +42,13 @@ module BabyErubis
 
     USE_FREEZE = (''.freeze).equal?(''.freeze)   # Ruby 2.1 feature
 
+    def initialize(opts=nil)
+      @use_freeze = self.class.const_get(:USE_FREEZE)
+      if opts
+        @use_freeze = opts.fetch(:use_freeze, @use_freeze)
+      end
+    end
+
     def from_file(filename, encoding='utf-8')
       input = File.open(filename, "rb:#{encoding}") {|f| f.read() }
       compile(input, filename, 1)
@@ -119,7 +126,7 @@ module BabyErubis
     private
 
     def build_text(text)
-      freeze = self.class.const_get(:USE_FREEZE) ? '.freeze' : ''
+      freeze = @use_freeze ? '.freeze' : ''
       return text && !text.empty? ? " _buf << '#{escape_text(text)}'#{freeze};" : ''
       #return text && !text.empty? ? " _buf << %q`#{escape_text(text)}`#{freeze};" : ''
     end

@@ -155,6 +155,20 @@ END
       assert_equal expected, template.convert(input)
     end
 
+    it "uses String#freeze forcedly when ':use_freeze=>true' passed to constructor." do
+      input = "value=<%== value %>"
+      expected = "_buf = ''; _buf << 'value='.freeze; _buf << (value).to_s; _buf.to_s\n"
+      template = BabyErubis::Text.new(:use_freeze=>true)
+      assert_equal expected, template.convert(input)
+    end
+
+    it "doesn't use String#freeze when ':use_freeze=>false' passed to constructor." do
+      input = "value=<%== value %>"
+      expected = "_buf = ''; _buf << 'value='; _buf << (value).to_s; _buf.to_s\n"
+      template = BabyErubis::Text.new(:use_freeze=>false)
+      assert_equal expected, template.convert(input)
+    end
+
   end
 
 
