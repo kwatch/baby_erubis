@@ -93,7 +93,7 @@ module BabyErubis
           raise "** unreachable: ch=#{ch.inspect}"
         end
       end
-      rest = $' || input
+      rest = pos == 0 ? input : input[pos..-1]   # or $' || input
       src << _t(rest)
       src << " _buf.to_s\n"    # postamble
       return src
