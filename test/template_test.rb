@@ -14,6 +14,14 @@ require 'minitest/autorun'
 require 'baby_erubis'
 
 
+def _modify(ruby_code)
+  if (''.freeze).equal?(''.freeze)
+    return ruby_code.gsub(/([^'])';/m, "\\1'.freeze;")
+  else
+    return ruby_code
+  end
+end
+
 
 describe BabyErubis::Template do
 
@@ -38,6 +46,7 @@ _buf = ''; _buf << 'title: '; _buf << (@title).to_s; _buf << '
 '; end;
  _buf.to_s
 END
+      expected = _modify(expected)
       code = template.convert(input)
       assert_equal expected, code
     end
@@ -56,6 +65,7 @@ _buf = ''; _buf << 'who\'s who?
 \\\\\\
 '; _buf.to_s
 END
+      expected = _modify(expected)
       assert_equal expected, template.convert(input)
     end
 
@@ -67,6 +77,7 @@ END
 _buf = ''; _buf << 'x = '; _buf << (x).to_s; _buf << '
 '; _buf.to_s
 END
+      expected = _modify(expected)
       assert_equal expected, template.convert(input)
     end
 
@@ -78,6 +89,7 @@ END
 _buf = ''; _buf << 'x = '; _buf << (x).to_s; _buf << '
 '; _buf.to_s
 END
+      expected = _modify(expected)
       assert_equal expected, template.convert(input)
     end
 
@@ -105,6 +117,7 @@ _buf = '';
  _buf << '
 '; _buf.to_s
 END
+      expected = _modify(expected)
       assert_equal expected, template.convert(input)
     end
 
@@ -118,6 +131,7 @@ _buf = ''; _buf << 'abc
 def
 '; _buf.to_s
 END
+      expected = _modify(expected)
       assert_equal expected, template.convert(input)
     end
 
@@ -137,6 +151,7 @@ _buf = '';   for item in items;
    end;
  _buf.to_s
 END
+      expected = _modify(expected)
       assert_equal expected, template.convert(input)
     end
 
@@ -324,6 +339,7 @@ _buf = ''; _buf << '<html>
 </html>
 '; _buf.to_s
 END
+  source = _modify(source)
   output = <<'END'
 <html>
   <h1>Example</h1>

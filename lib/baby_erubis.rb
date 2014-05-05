@@ -40,6 +40,8 @@ module BabyErubis
 
   class Template
 
+    USE_FREEZE = (''.freeze).equal?(''.freeze)   # Ruby 2.1 feature
+
     def self.load(filename, encoding='utf-8')
       input = File.open(filename, "rb:#{encoding}") {|f| f.read() }
       return self.new(input, filename)
@@ -113,8 +115,9 @@ module BabyErubis
     private
 
     def build_text(text)
-      return text && !text.empty? ? " _buf << '#{escape_text(text)}';" : ''
-      #return text && !text.empty? ? " _buf << %q`#{escape_text(text)}`;" : ''
+      freeze = self.class.const_get(:USE_FREEZE) ? '.freeze' : ''
+      return text && !text.empty? ? " _buf << '#{escape_text(text)}'#{freeze};" : ''
+      #return text && !text.empty? ? " _buf << %q`#{escape_text(text)}`#{freeze};" : ''
     end
     alias _t build_text
 
