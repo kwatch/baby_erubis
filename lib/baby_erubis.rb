@@ -21,9 +21,9 @@ module BabyErubis
     FREEZE = (''.freeze).equal?(''.freeze)   # Ruby 2.1 feature
 
     def initialize(opts=nil)
-      @freeze = self.class.const_get(:FREEZE)
+      @freeze    = self.class.const_get(:FREEZE)
       if opts
-        @freeze = (v=opts[:freeze]) != nil ? v : @freeze
+        @freeze = (v=opts[:freeze   ]) != nil ? v : @freeze
       end
     end
 
