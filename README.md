@@ -21,7 +21,7 @@ Examples
 Render template string:
 
     require 'baby_erubis'
-    template = BabyErubis::Html.new <<'END', __FILE__, __LINE__+1
+    template = BabyErubis::Html.new.from_str <<'END', __FILE__, __LINE__+1
       <h1><%= @title %></h1>
       <% for item in @items %>
         <p><%= item %></p>
@@ -35,7 +35,7 @@ Render template string:
 Render template file:
 
     require 'baby_erubis'
-    templat = BabyErubis::Html.load('example.html.erb', 'utf-8')
+    templat = BabyErubis::Html.new.from_file('example.html.erb', 'utf-8')
     context = {:title=>'Example', :items=>['A', 'B', 'C']}
     output = template.render(context)
     print output
@@ -72,7 +72,7 @@ Example:
     class MyApp
       include BabyErubis::HtmlEscaper  # necessary to define escape()
 
-      TEMPLATE = BabyErubis::Html.new <<-'END', __FILE__, __LINE__+1
+      TEMPLATE = BabyErubis::Html.new.from_str <<-'END', __FILE__, __LINE__+1
         <html>
           <body>
             <p>Hello <%= @name %>!</p>
@@ -178,7 +178,7 @@ Sample code:
     class MyApp
       include BabyErubis::HtmlEscaper  # necessary to define escape()
 
-      LAYOUT = BabyErubis::Html.new <<-'END', __FILE__, __LINE__+1
+      LAYOUT = BabyErubis::Html.new.from_str <<-'END', __FILE__, __LINE__+1
         <html>
           <body>
             <% _buf << @_content %>    # or <%== @_content %>
@@ -186,7 +186,7 @@ Sample code:
         </html>
       END
 
-      TEMPLATE = BabyErubis::Html.new <<-'END', __FILE__, __LINE__+1
+      TEMPLATE = BabyErubis::Html.new.from_str <<-'END', __FILE__, __LINE__+1
         <p>Hello <%= @name %>!</p>
       END
 
