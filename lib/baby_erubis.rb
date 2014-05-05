@@ -29,12 +29,12 @@ module BabyErubis
 
     def from_file(filename, encoding='utf-8')
       input = File.open(filename, "rb:#{encoding}") {|f| f.read() }
-      compile(convert(input), filename, 1)
+      compile(parse(input), filename, 1)
       return self
     end
 
     def from_str(input, filename=nil, linenum=1)
-      compile(convert(input), filename, linenum)
+      compile(parse(input), filename, linenum)
       return self
     end
 
@@ -53,7 +53,7 @@ module BabyErubis
       return self
     end
 
-    def convert(input)
+    def parse(input)
       src = "_buf = '';"       # preamble
       pos = 0
       input.scan(pattern()) do |lspace, ch, code, rspace|

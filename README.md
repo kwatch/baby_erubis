@@ -181,7 +181,7 @@ Sample code:
 
     class MyTemplate < BabyErubis::Html
 
-      def convert(input, *args)
+      def parse(input, *args)
         stripped = input.gsub(/^[ \t]+</, '<')
         return super(stripped, *args)
       end
