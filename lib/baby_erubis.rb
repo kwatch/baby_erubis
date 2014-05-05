@@ -62,13 +62,13 @@ module BabyErubis
 
     attr_reader :src
 
-    #EMBED_REXP = /(^[ \t]*)?<%(==?|\#)?(.*?)%>([ \t]*\r?\n)?/m
-    EMBED_REXP = /(^[ \t]*)?<%(==?|\#)? ?(.*?) ?%>([ \t]*\r?\n)?/m
+    #PATTERN = /(^[ \t]*)?<%(==?|\#)?(.*?)%>([ \t]*\r?\n)?/m
+    PATTERN = /(^[ \t]*)?<%(==?|\#)? ?(.*?) ?%>([ \t]*\r?\n)?/m
 
-    def embed_rexp
-      return EMBED_REXP
+    def pattern
+      return PATTERN
     end
-    protected :embed_rexp
+    protected :pattern
 
     def compile(input, filename=nil, linenum=1)
       src = convert(input)
@@ -80,7 +80,7 @@ module BabyErubis
     def convert(input)
       src = "_buf = '';"       # preamble
       pos = 0
-      rexp = embed_rexp()
+      rexp = pattern()
       input.scan(rexp) do |lspace, ch, code, rspace|
         match = Regexp.last_match
         text  = input[pos, match.begin(0) - pos]
