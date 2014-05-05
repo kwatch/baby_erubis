@@ -18,7 +18,7 @@
 ## Example:
 ##
 ##   ## render template string
-##   template = BabyErubis::Html.new <<'END', __FILE__, __LINE__+1
+##   template = BabyErubis::Html.new.from_str <<'END', __FILE__, __LINE__+1
 ##     <h1><%= @title %></h1>
 ##     <% for item in @items %>
 ##       <p><%= item %></p>
@@ -29,7 +29,7 @@
 ##   print output
 ##
 ##   ## render template file
-##   templat = BabyErubis::Html.load('example.html.erb', 'utf-8')
+##   templat = BabyErubis::Html.new.from_file('example.html.erb', 'utf-8')
 ##   context = {:title=>'Example', :items=>['<AAA>', 'B&B', '"CCC"']}
 ##   output = template.render(context)
 ##   print output
@@ -42,13 +42,15 @@ module BabyErubis
 
     USE_FREEZE = (''.freeze).equal?(''.freeze)   # Ruby 2.1 feature
 
-    def self.load(filename, encoding='utf-8')
+    def from_file(filename, encoding='utf-8')
       input = File.open(filename, "rb:#{encoding}") {|f| f.read() }
-      return self.new(input, filename)
+      compile(input, filename, 1)
+      return self
     end
 
-    def initialize(input=nil, filename=nil, linenum=1)
-      compile(input, filename, linenum) if input
+    def from_str(input, filename=nil, linenum=1)
+      compile(input, filename, linenum)
+      return self
     end
 
     attr_reader :src
