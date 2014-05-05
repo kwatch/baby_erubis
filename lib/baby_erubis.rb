@@ -115,7 +115,7 @@ module BabyErubis
     private
 
     def build_text(text)
-      freeze = USE_FREEZE ? '.freeze' : ''
+      freeze = self.class.const_get(:USE_FREEZE) ? '.freeze' : ''
       return text && !text.empty? ? " _buf << '#{escape_text(text)}'#{freeze};" : ''
       #return text && !text.empty? ? " _buf << %q`#{escape_text(text)}`#{freeze};" : ''
     end
