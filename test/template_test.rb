@@ -155,6 +155,22 @@ END
       assert_equal expected, template.convert(input)
     end
 
+    it "handles '<%- -%>' (but do nothing)." do
+      input = <<'END'
+  <%- for item in @items -%>
+    <%-== item -%>
+  <%- end -%>
+END
+      expected = <<'END'
+_buf = '';   for item in @items;
+ _buf << '    '; _buf << (item).to_s; _buf << '
+';   end;
+ _buf.to_s
+END
+      expected = _modify(expected)
+      assert_equal expected, template.convert(input)
+    end
+
     it "uses String#freeze forcedly when ':use_freeze=>true' passed to constructor." do
       input = "value=<%== value %>"
       expected = "_buf = ''; _buf << 'value='.freeze; _buf << (value).to_s; _buf.to_s\n"
@@ -167,6 +183,26 @@ END
       expected = "_buf = ''; _buf << 'value='; _buf << (value).to_s; _buf.to_s\n"
       template = BabyErubis::Text.new(:use_freeze=>false)
       assert_equal expected, template.convert(input)
+    end
+
+  end
+
+
+  describe '#pattern()' do
+
+    it "returns default embed pattern." do
+      template = BabyErubis::Template.new
+      assert_equal BabyErubis::Template::PATTERN, template.pattern
+    end
+
+    it "returns new embed pattern when overrided in subclass." do
+      class FooTemplate < BabyErubis::Template
+        rexp = BabyErubis::Template::PATTERN
+        PATTERN = Regexp.compile(rexp.to_s.sub(/<%/, '\{%').sub(/%>/, '%\}'))
+      end
+      template = FooTemplate.new
+      refute_equal BabyErubis::Template::PATTERN, template.pattern
+      assert_equal FooTemplate::PATTERN, template.pattern
     end
 
   end
