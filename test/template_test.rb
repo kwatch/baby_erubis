@@ -155,6 +155,22 @@ END
       assert_equal expected, template.convert(input)
     end
 
+    it "handles '<%- -%>' (but do nothing)." do
+      input = <<'END'
+  <%- for item in @items -%>
+    <%-== item -%>
+  <%- end -%>
+END
+      expected = <<'END'
+_buf = '';   for item in @items;
+ _buf << '    '; _buf << (item).to_s; _buf << '
+';   end;
+ _buf.to_s
+END
+      expected = _modify(expected)
+      assert_equal expected, template.convert(input)
+    end
+
     it "uses String#freeze forcedly when ':use_freeze=>true' passed to constructor." do
       input = "value=<%== value %>"
       expected = "_buf = ''; _buf << 'value='.freeze; _buf << (value).to_s; _buf.to_s\n"

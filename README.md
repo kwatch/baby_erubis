@@ -109,11 +109,11 @@ Sample code:
 
     class MyTemplate < BabyErubis::Html
 
-      rexp = BabyErubis::Template::EMBED_REXP
-      NEW_EMBED_REXP = Regexp.compile(rexp.to_s.sub(/<%/, '\{%').sub(/%>/, '%\}'))
+      rexp = BabyErubis::Template::PATTERN
+      PATTERN = Regexp.compile(rexp.to_s.sub(/<%/, '\{%').sub(/%>/, '%\}'))
 
-      def embed_rexp
-        NEW_EMBED_REXP
+      def pattern
+        PATTERN
       end
 
     end

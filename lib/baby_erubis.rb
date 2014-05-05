@@ -63,7 +63,7 @@ module BabyErubis
     attr_reader :src
 
     #PATTERN = /(^[ \t]*)?<%(==?|\#)?(.*?)%>([ \t]*\r?\n)?/m
-    PATTERN = /(^[ \t]*)?<%(==?|\#)? ?(.*?) ?%>([ \t]*\r?\n)?/m
+    PATTERN = /(^[ \t]*)?<%-?(==?|\#)? ?(.*?) ?-?%>([ \t]*\r?\n)?/m
 
     def pattern
       return self.class.const_get(:PATTERN)
