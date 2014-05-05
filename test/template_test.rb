@@ -155,6 +155,20 @@ END
       assert_equal expected, template.convert(input)
     end
 
+    it "uses String#freeze forcedly when ':use_freeze=>true' passed to constructor." do
+      input = "value=<%== value %>"
+      expected = "_buf = ''; _buf << 'value='.freeze; _buf << (value).to_s; _buf.to_s\n"
+      template = BabyErubis::Text.new(:use_freeze=>true)
+      assert_equal expected, template.convert(input)
+    end
+
+    it "doesn't use String#freeze when ':use_freeze=>false' passed to constructor." do
+      input = "value=<%== value %>"
+      expected = "_buf = ''; _buf << 'value='; _buf << (value).to_s; _buf.to_s\n"
+      template = BabyErubis::Text.new(:use_freeze=>false)
+      assert_equal expected, template.convert(input)
+    end
+
   end
 
 
@@ -195,7 +209,7 @@ items:
   - B&B
   - "CCC"
 END
-      tmpl = BabyErubis::Text.new(input)
+      tmpl = BabyErubis::Text.new.from_str(input)
       context = {:title=>'<b>Example</b>', :items=>['<AAA>', 'B&B', '"CCC"']}
       output = tmpl.render(context)
       assert_equal expected, output
@@ -257,7 +271,7 @@ END
   end
 
 
-  describe '.load()' do
+  describe '.from_file()' do
 
     it "reads template file and returns template object." do
       input = <<'END'
@@ -277,7 +291,7 @@ END
       tmpfile = "test.#{rand()}.erb"
       File.open(tmpfile, 'wb') {|f| f.write(input) }
       begin
-        template = BabyErubis::Text.load(tmpfile)
+        template = BabyErubis::Text.new.from_file(tmpfile)
         context = {:title=>'Example', :items=>['<AAA>', 'B&B', '"CCC"']}
         output = template.render(context)
         assert_equal expected, output
@@ -293,13 +307,13 @@ END
       File.open(tmpfile, 'wb:utf-8') {|f| f.write(input) }
       begin
         # nothing should be raised
-        template = BabyErubis::Text.load(tmpfile, 'utf-8')
+        template = BabyErubis::Text.new.from_file(tmpfile, 'utf-8')
         output = template.render(:title=>"サンプル")
         assert_equal expected, output
         assert_equal 'UTF-8', output.encoding.name
         # exception should be raised
         ex = assert_raises ArgumentError do
-          template = BabyErubis::Text.load(tmpfile, 'us-ascii')
+          template = BabyErubis::Text.new.from_file(tmpfile, 'us-ascii')
         end
         assert_equal "invalid byte sequence in US-ASCII", ex.message
       ensure
@@ -358,7 +372,7 @@ END
   describe '#convert()' do
 
     it "handles embedded expression with escaping." do
-      tmpl = BabyErubis::Html.new(input)
+      tmpl = BabyErubis::Html.new.from_str(input)
       assert_equal source, tmpl.src
     end
 
@@ -368,7 +382,7 @@ END
   describe '#render()' do
 
     it "renders context values with escaping." do
-      tmpl = BabyErubis::Html.new(input)
+      tmpl = BabyErubis::Html.new.from_str(input)
       context = {:title=>'Example', :items=>['<AAA>', 'B&B', '"CCC"']}
       assert_equal output, tmpl.render(context)
     end
