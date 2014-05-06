@@ -61,8 +61,12 @@ Expression in `<%= ... %>` is escaped according to template class.
 
 
 
+Advanced Topics
+===============
+
+
 Template Context
-================
+----------------
 
 When rendering template, you can pass not only Hash object but also any object
 as context values. Internally, rendering method converts Hash object into
@@ -96,11 +100,6 @@ Example:
     if __FILE__ == $0
       print MyApp.new('World').render()
     end
-
-
-
-Advanced Topics
-===============
 
 
 String#freeze()
