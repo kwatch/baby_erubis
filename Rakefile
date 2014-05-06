@@ -2,7 +2,7 @@
 
 ###
 
-RELEASE   = ENV['RELEASE'] || '0.0.0'
+RELEASE   = ENV['rel'] || '0.0.0'
 COPYRIGHT = 'copyright(c) 2014 kuwata-lab.com all rights reserved'
 LICENSE   = 'MIT License'
 
@@ -31,6 +31,7 @@ end
 
 desc "copy files into 'dist/#{RELEASE}'"
 task :dist do
+  require_release_number()
   spec_src = File.open('baby_erubis.gemspec') {|f| f.read }
   spec = eval spec_src
   dir = "dist/#{RELEASE}"
@@ -55,8 +56,28 @@ end
 
 desc "create rubygem pacakge"
 task :package => :dist do
+  require_release_number()
   chdir "dist/#{RELEASE}" do
     sh "gem build *.gemspec"
   end
   mv Dir.glob("dist/#{RELEASE}/*.gem"), 'dist'
+end
+
+
+desc "release gem"
+task :release => :package do
+  require_release_number()
+  sh "git tag ruby-#{RELEASE}"
+  chdir "dist" do
+    sh "gem push baby_erubis-#{RELEASE}.gem"
+  end
+end
+
+
+def require_release_number
+  if RELEASE == '0.0.0'
+    $stderr.puts "*** Release number is not speicified"
+    $stderr.puts "*** Usage: rake <task> rel=X.X.X"
+    raise StandardError
+  end
 end
