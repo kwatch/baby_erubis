@@ -10,7 +10,7 @@
 ##
 ## Yet another eRuby implementation, based on Erubis.
 ##
-## See https://github.com/kwatch/BabyErubis/tree/ruby for details.
+## See https://github.com/kwatch/baby_erubis/tree/ruby for details.
 ##
 
 module BabyErubis
