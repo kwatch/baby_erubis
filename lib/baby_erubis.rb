@@ -9,8 +9,18 @@
 
 ##
 ## Yet another eRuby implementation, based on Erubis.
-##
 ## See https://github.com/kwatch/baby_erubis/tree/ruby for details.
+##
+## Example:
+##     template = BabyEruibs::Html.new.from_str <<'END', __FILE__, __LINE__+1
+##     <% for item in @items %>
+##     - item = <%= item %>
+##     <% end %>
+##     END
+##     print template.render(:items=>['A', 'B', 'C'])
+##     ## or
+##     template = BabyErubis::Html.new.from_file('example.html.erb', 'utf-8')
+##     print template.render(:items=>['A', 'B', 'C'])
 ##
 
 module BabyErubis
