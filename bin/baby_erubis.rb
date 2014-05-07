@@ -180,6 +180,9 @@ module Cmdopt
           optarg  = $2 || true
           schema = @schemas.find {|sch| sch.long == optname }  or
             raise error("--#{optname}: unknown option.")
+          if schema.arg_required? && optarg == true
+            raise error("--#{optname}: argument required.")
+          end
           errmsg = schema.validate(optarg)
           raise error("#{optstr}: #{errmsg}") if errmsg
           schema.run_action(options, optarg)
