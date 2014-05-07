@@ -54,8 +54,8 @@ end
 
 describe Main do
 
-  help_message = <<'END'
-Usage: [..options..] script_test.rb
+  help_message = <<"END"
+Usage: [..options..] #{File.basename($0)}
   -h, --help                  : help
   -v, --version               : version
   -x                          : show ruby code
@@ -395,7 +395,7 @@ END
         dummy_stdio { status = Main.main(['-x', '--format', fname]) }
       end
       assert_equal "", sout
-      assert_equal "script_test.rb: --format: argument required.\n", serr
+      assert_equal "#{File.basename($0)}: --format: argument required.\n", serr
       assert_equal 1, status
     end
 
@@ -405,7 +405,7 @@ END
         dummy_stdio { status = Main.main(['-x', '--format=json', fname]) }
       end
       assert_equal "", sout
-      assert_equal "script_test.rb: --format=json: 'text' or 'html' expected\n", serr
+      assert_equal "#{File.basename($0)}: --format=json: 'text' or 'html' expected\n", serr
       assert_equal 1, status
     end
 
@@ -449,7 +449,7 @@ END
         dummy_stdio { status = Main.main(['-x', '--freeze', fname]) }
       end
       assert_equal "", sout
-      assert_equal "script_test.rb: --freeze: argument required.\n", serr
+      assert_equal "#{File.basename($0)}: --freeze: argument required.\n", serr
       assert_equal 1, status
     end
 
@@ -459,7 +459,7 @@ END
         dummy_stdio { status = Main.main(['-x', '--freeze=yes', fname]) }
       end
       assert_equal "", sout
-      assert_equal "script_test.rb: --freeze=yes: 'true' or 'false' expected\n", serr
+      assert_equal "#{File.basename($0)}: --freeze=yes: 'true' or 'false' expected\n", serr
       assert_equal 1, status
     end
 
