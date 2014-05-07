@@ -262,9 +262,10 @@ class Main
   def self.main(argv=ARGV)
     begin
       self.new.run(argv)
+      return 0
     rescue Cmdopt::ParseError => ex
       $stderr << ex.message << "\n"
-      exit 1
+      return 1
     end
   end
 
@@ -422,5 +423,5 @@ end
 
 
 #if __FILE__ == $0
-  Main.main() unless defined? NOEXEC_SCRIPT
+  exit Main.main() unless defined? NOEXEC_SCRIPT
 #end
