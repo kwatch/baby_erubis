@@ -422,5 +422,5 @@ end
 
 
 #if __FILE__ == $0
-  Main.main()
+  Main.main() unless defined? NOEXEC_SCRIPT
 #end
