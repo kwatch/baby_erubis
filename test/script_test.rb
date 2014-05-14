@@ -329,6 +329,13 @@ END
       end
       assert_equal OUTPUT_HTML, sout
       assert_equal "", serr
+      ## when syntax error exists
+      context_str = "{title:Love&Peace,items:[A,B,C]}"
+      sout, serr = with_erubyfile do |fname|
+        dummy_stdio { Main.main(['-Hc', context_str, fname]) }
+      end
+      assert_equal "", sout
+      assert_equal "-c '{title:Love&Peace,items:[A,B,C]}': YAML syntax error: (Psych::SyntaxError) found unexpected ':' while scanning a plain scalar at line 1 column 2\n", serr
     end
 
     it "can specify context data as Ruby code." do
@@ -338,6 +345,18 @@ END
       end
       assert_equal OUTPUT_HTML, sout
       assert_equal "", serr
+      ## when syntax error exists
+      context_str = "@title = 'Love&Peace' @items = ['A','B','C']"
+      sout, serr = with_erubyfile do |fname|
+        dummy_stdio { Main.main(['-Hc', context_str, fname]) }
+      end
+      expected = "-c '@title = 'Love&Peace' @items = ['A','B','C']': Ruby syntax error: (SyntaxError) unexpected tIVAR, expecting $end
+@title = 'Love&Peace' @items = ['A','B','C']
+                            ^
+"
+      expected = expected.sub(/\$end/, "end-of-input") if RUBY_VERSION =~ /^2\./
+      assert_equal "", sout
+      assert_equal expected, serr
     end
 
   end
@@ -355,6 +374,50 @@ END
       end
       assert_equal OUTPUT_HTML, sout
       assert_equal "", serr
+      ## when file not found
+      sout, serr = with_erubyfile do |fname|
+        dummy_stdio { Main.main(['-Hf', ctx_file, fname]) }
+      end
+      assert_equal "", sout
+      assert_equal "-f #{ctx_file}: file not found.\n", serr
+      ## when syntax error exists
+      ctx_str = "{title:Love&Peace,items:[A, B, C]}"
+      sout, serr = with_erubyfile do |fname|
+        with_tmpfile(ctx_file, ctx_str) do
+          dummy_stdio { Main.main(['-Hf', ctx_file, fname]) }
+        end
+      end
+      assert_equal "", sout
+      assert_equal "-f #{ctx_file}: YAML syntax error: (Psych::SyntaxError) found unexpected ':' while scanning a plain scalar at line 1 column 2\n", serr
+    end
+
+    it "can specify context data in JSON format." do
+      ctx_str = '{"title":"Love&Peace","items":["A","B","C"]}'
+      ctx_file = "tmpdata.json"
+      sout, serr = with_erubyfile do |fname|
+        with_tmpfile(ctx_file, ctx_str) do
+          dummy_stdio { Main.main(['-Hf', ctx_file, fname]) }
+        end
+      end
+      assert_equal OUTPUT_HTML, sout
+      assert_equal "", serr
+      ## when file not found
+      sout, serr = with_erubyfile do |fname|
+        dummy_stdio { Main.main(['-Hf', ctx_file, fname]) }
+      end
+      assert_equal "", sout
+      assert_equal "-f #{ctx_file}: file not found.\n", serr
+      ## when syntax error exists
+      ctx_str = '{"title":"Love&Peace",items:["A","B","C"],}'
+      sout, serr = with_erubyfile do |fname|
+        with_tmpfile(ctx_file, ctx_str) do
+          dummy_stdio { Main.main(['-Hf', ctx_file, fname]) }
+        end
+      end
+      expected = "-f #{ctx_file}: JSON syntax error: (JSON::ParserError) 743: unexpected token\n"
+      expected = expected.sub(/743/, '795') if RUBY_VERSION >= '2.0'
+      assert_equal "", sout
+      assert_equal expected, serr
     end
 
     it "can specify context data as Ruby code." do
@@ -367,6 +430,37 @@ END
       end
       assert_equal OUTPUT_HTML, sout
       assert_equal "", serr
+      ## when file not found
+      sout, serr = with_erubyfile do |fname|
+        dummy_stdio { Main.main(['-Hf', ctx_file, fname]) }
+      end
+      assert_equal "", sout
+      assert_equal "-f #{ctx_file}: file not found.\n", serr
+      ## when syntax error exists
+      ctx_str = "@title = 'Love&Peace' @items = ['A','B','C']"
+      sout, serr = with_erubyfile do |fname|
+        with_tmpfile(ctx_file, ctx_str) do
+          dummy_stdio { Main.main(['-Hf', ctx_file, fname]) }
+        end
+      end
+      expected = "-f #{ctx_file}: Ruby syntax error: (SyntaxError) unexpected tIVAR, expecting $end
+@title = 'Love&Peace' @items = ['A','B','C']
+                            ^\n"
+      expected = expected.sub(/\$end/, "end-of-input") if RUBY_VERSION =~ /^2\./
+      assert_equal "", sout
+      assert_equal expected, serr
+    end
+
+    it "reports error when unknown data file suffix." do
+      ctx_str = '{"title": "Love&Peace", "items": ["A","B","C"]}'
+      ctx_file = "tmpdata.js"
+      sout, serr = with_erubyfile do |fname|
+        with_tmpfile(ctx_file, ctx_str) do
+          dummy_stdio { Main.main(["-Hf#{ctx_file}", fname]) }
+        end
+      end
+      assert_equal "", sout
+      assert_equal "-f #{ctx_file}: unknown suffix (expected '.yaml', '.json', or '.rb').\n", serr
     end
 
   end
