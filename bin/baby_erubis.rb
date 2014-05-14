@@ -341,6 +341,19 @@ class Main
   def build_help_message(parser)
     s = "Usage: #{@cmdname} [..options..] [erubyfile]\n"
     s << parser.help_message(30)
+    s << "\n"
+    s << <<"END"
+Example:
+  ## show compiled code
+  $ #{@cmdname} -x   file.erb     # text
+  $ #{@cmdname} -xH  file.erb     # html
+  $ #{@cmdname} -X   file.erb     # embedded code only
+  $ #{@cmdname} -XNU file.erb     # with line number
+  ## render eruby file with context data
+  $ #{@cmdname} -c '{items: [A, B, C]}'    file.erb    # YAML
+  $ #{@cmdname} -c '@items=["A","B","C"]}' file.erb    # Ruby
+  $ #{@cmdname} -f data.yaml file.erb   # or *.json, *.rb
+END
     return s
   end
 

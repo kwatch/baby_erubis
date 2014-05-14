@@ -65,8 +65,8 @@ describe Main do
     end
   end
 
-  help_message = <<"END"
-Usage: #{File.basename($0)} [..options..] [erubyfile]
+  help_message = <<'END'.gsub(/\$SCRIPT/, File.basename($0))
+Usage: $SCRIPT [..options..] [erubyfile]
   -h, --help                  : help
   -v, --version               : version
   -x                          : show ruby code
@@ -80,6 +80,17 @@ Usage: #{File.basename($0)} [..options..] [erubyfile]
       --format={text|html}    : format (default: text)
       --encoding=name         : encoding (default: utf-8)
       --freeze={true|false}   : use String#freeze() or not
+
+Example:
+  ## show compiled code
+  $ $SCRIPT -x   file.erb     # text
+  $ $SCRIPT -xH  file.erb     # html
+  $ $SCRIPT -X   file.erb     # embedded code only
+  $ $SCRIPT -XNU file.erb     # with line number
+  ## render eruby file with context data
+  $ $SCRIPT -c '{items: [A, B, C]}'    file.erb    # YAML
+  $ $SCRIPT -c '@items=["A","B","C"]}' file.erb    # Ruby
+  $ $SCRIPT -f data.yaml file.erb   # or *.json, *.rb
 END
 
   ERUBY_TEMPLATE = <<'END'
