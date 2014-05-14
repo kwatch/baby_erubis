@@ -12,11 +12,11 @@ $: << libpath unless $:.include?(libpath)
 require 'minitest/autorun'
 
 ## enforce not to use String#freeze() even if RUBY_VERSION >= 2.1
-require 'baby_erubis'
-BabyErubis::Template.class_eval do
-  remove_const :FREEZE
-  FREEZE = false
-end
+#require 'baby_erubis'
+#BabyErubis::Template.class_eval do
+#  remove_const :FREEZE
+#  FREEZE = false
+#end
 
 ## load script file ('bin/baby_erubis.rb')
 NOEXEC_SCRIPT = true
@@ -56,6 +56,14 @@ end
 
 
 describe Main do
+
+  def _modify(ruby_code)
+    if (''.freeze).equal?(''.freeze)
+      return ruby_code.gsub(/([^'])';/m, "\\1'.freeze;")
+    else
+      return ruby_code
+    end
+  end
 
   help_message = <<"END"
 Usage: [..options..] #{File.basename($0)}
@@ -189,13 +197,13 @@ END
       sout, serr = with_erubyfile do |fname|
         dummy_stdio { Main.main(['-x', fname]) }
       end
-      assert_equal SOURCE_TEXT, sout
+      assert_equal _modify(SOURCE_TEXT), sout
       assert_equal "", serr
     end
 
     it "reads stdin when no file specified." do
       sout, serr = dummy_stdio(ERUBY_TEMPLATE) { Main.main(['-x']) }
-      assert_equal SOURCE_TEXT, sout
+      assert_equal _modify(SOURCE_TEXT), sout
       assert_equal "", serr
     end
 
@@ -313,7 +321,7 @@ END
       sout, serr = with_erubyfile do |fname|
         dummy_stdio { Main.main(['-Hx', fname]) }
       end
-      assert_equal SOURCE_HTML, sout
+      assert_equal _modify(SOURCE_HTML), sout
       assert_equal "", serr
     end
 
@@ -515,7 +523,7 @@ END
       sout, serr = with_erubyfile do |fname|
         dummy_stdio { status = Main.main(['-x', '--encoding=utf-8', fname]) }
       end
-      assert_equal SOURCE_TEXT, sout
+      assert_equal _modify(SOURCE_TEXT), sout
       assert_equal "" , serr
     end
 
@@ -528,7 +536,7 @@ END
       sout, serr = with_erubyfile do |fname|
         dummy_stdio { Main.main(['-x', '--freeze=true', fname]) }
       end
-      expected = SOURCE_TEXT.gsub(/([^'])';/, "\\1'.freeze;")
+      expected = _modify(SOURCE_TEXT).gsub(/([^'])';/, "\\1'.freeze;")
       assert_equal expected, sout
     end
 
@@ -606,5 +614,6 @@ describe Cmdopt::Parser do
     end
 
   end
+
 
 end
