@@ -155,11 +155,10 @@ module BabyErubis
 
   class HtmlTemplate < Template
 
-    protected
-
     def escaped_expr(code)
       return "escape(#{code})"   # escape() is defined in HtmlTemplateContext
     end
+    protected :escaped_expr
 
     def new_context(hash)
       return HtmlTemplateContext.new(hash)

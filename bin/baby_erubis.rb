@@ -1,0 +1,427 @@
+# -*- coding: utf-8 -*-
+
+###
+### $Release: 0.0.0 $
+### $Copyright: copyright(c) 2014 kuwata-lab.com all rights reserved $
+### $License: MIT License $
+###
+
+
+#require 'yaml'       # on-demand load
+#require 'json'       # on-demand load
+require 'baby_erubis'
+
+
+module Cmdopt
+
+
+  def self.new(*args)
+    return Parser.new(*args)
+  end
+
+  def self.new_with(*optdef_strs)
+    parser = Parser.new
+    optdef_strs.each do |str|
+      parser.option(str)
+    end
+    return parser
+  end
+
+
+  class Schema
+
+    def initialize(optstr)
+      short = long = nil
+      case optstr
+      when /\A(?:<(\w+)>)? *-(\w) *, *--(\w+)(?:\[=(\S+)\]|=(\S+))?[ \t]*(?::[ \t]*(.*))?\z/
+        name, short, long, optarg, arg, desc = $1, $2, $3, $4, $5, $6
+      when /\A(?:<(\w+)>)? *-(\w)(?:\[(\S+)\]| +(\S+)?)?[ \t]*(?::[ \t]*(.*))?\z/
+        name, short,       optarg, arg, desc = $1, $2, $3, $4, $5
+      when /\A(?:<(\w+)>)? *--(\w+)(?:\[=(\S+)\]|=(\S+))?[ \t]*(?::[ \t]*(.*))?\z/
+        name,        long, optarg, arg, desc = $1, $2, $3, $4, $5
+      else
+        raise SchemaError.new("'#{optstr}': invalid option definition.")
+      end
+      @name  = name
+      @short = short
+      @long  = long
+      @arg   = arg || optarg
+      @desc  = desc
+      @arg_required = !! arg
+      @arg_optional = !! optarg
+      @validations = []
+      @action = nil
+      #
+      setup()
+    end
+
+    attr_reader :name, :short, :long, :arg, :desc
+
+    def setup
+      if @arg == 'N' || @optarg == 'N'
+        _add_validation(proc {|arg|
+          "integer expected." unless arg =~ /\A\d+\z/
+        })
+        _set_action(proc {|options, arg|
+          options[canonical_name()] = arg == true ? arg : arg.to_i
+        })
+      end
+    end
+    private :setup
+
+    def arg_required?
+      @arg_required
+    end
+
+    def arg_optional?
+      @arg_optional
+    end
+
+    def validate(optarg)
+      @validations.each do |block|
+        errmsg = block.call(optarg)
+        return errmsg if errmsg
+      end
+      return nil
+    end
+
+    def run_action(options, optarg)
+      if @action
+        @action.call(options, optarg)
+      else
+        options[canonical_name()] = optarg
+      end
+      nil
+    end
+
+    def canonical_name
+      return @name || @long || @short
+    end
+
+    def _add_validation(block)
+      @validations << block
+    end
+
+    def _set_action(block)
+      @action = block
+    end
+
+    def to_help_message(width)
+      if @short && @long
+        if @optarg ; s = "-#{@short}, --#{@long}[=#{@optarg}]"
+        elsif @arg ; s = "-#{@short}, --#{@long}=#{@arg}"
+        else       ; s = "-#{@short}, --#{@long}"
+        end
+      elsif @short
+        if @optarg ; s = "-#{@short}[#{@optarg}]"
+        elsif @arg ; s = "-#{@short} #{@arg}"
+        else       ; s = "-#{@short}"
+        end
+      elsif @long
+        if @optarg ; s = "    --#{@long}[=#{@optarg}]"
+        elsif @arg ; s = "    --#{@long}=#{@arg}"
+        else       ; s = "    --#{@long}"
+        end
+      end
+      s << ' ' * (width - s.length) if s.length < width
+      s << ': ' << @desc.to_s
+      s << "\n"
+      return s
+    end
+
+  end
+
+
+  class SchemaError < StandardError
+  end
+
+
+  class SchemaBuilder
+
+    def initialize(schema)
+      @schema = schema
+    end
+
+    def validation(&block)
+      @schema._add_validation(block)
+      return self
+    end
+
+    def action(&block)
+      @schema._set_action(block)
+      return self
+    end
+
+  end
+
+
+  class Parser
+
+    def initialize(cmdname=true)
+      cmdname = File.basename($0) if cmdname == true
+      @cmdname = cmdname
+      @schemas = []
+    end
+
+    def option(optstr)
+      schema = Schema.new(optstr)
+      @schemas << schema
+      return SchemaBuilder.new(schema)
+    end
+
+    def parse(argv)
+      options = {}
+      while argv[0] && argv[0] =~ /\A-/
+        optstr = argv.shift
+        if optstr == '--'
+          break
+        elsif optstr =~ /\A--(\w+)(?:=(.*))?/
+          optname = $1
+          optarg  = $2 || true
+          schema = @schemas.find {|sch| sch.long == optname }  or
+            raise error("--#{optname}: unknown option.")
+          if schema.arg_required? && optarg == true
+            raise error("--#{optname}: argument required.")
+          end
+          errmsg = schema.validate(optarg)
+          raise error("#{optstr}: #{errmsg}") if errmsg
+          schema.run_action(options, optarg)
+        else
+          i = 1
+          while i < optstr.length
+            optch = optstr[i, 1]
+            schema = @schemas.find {|sch| sch.short == optch }  or
+              raise error("-#{optch}: unknown option.")
+            if schema.arg_required?
+              optarg = (i+1 < optstr.length) ? optstr[(i+1)..-1] : argv.shift  or
+                raise error("-#{optch}: argument required.")
+              errmsg = schema.validate(optarg)
+              raise error("-#{optch} #{optarg}: #{errmsg}") if errmsg
+              i = optstr.length
+            elsif schema.arg_optional?
+              optarg = (i+1 < optstr.length) ? optstr[(i+1)..-1] : true
+              errmsg = optarg != true ? schema.validate(optarg) : nil
+              raise error("-#{optch}#{optarg}: #{errmsg}") if errmsg
+              i = optstr.length
+            else
+              optarg = true
+              i += 1
+            end
+            schema.run_action(options, optarg)
+          end
+        end
+      end
+      return options
+    end
+
+    def help_message(width=30)
+      s = ""
+      @schemas.each do |schema|
+        s << "  " << schema.to_help_message(width-2) if schema.desc
+      end
+      return s
+    end
+
+    private
+
+    def error(message)
+      message = "#{@cmdname}: #{message}" if @cmdname && @cmdname.length > 0
+      return ParseError.new(message)
+    end
+
+  end
+
+
+  class ParseError < StandardError
+  end
+
+
+end
+
+
+module BabyErubis
+
+
+  module HideTextEnhander
+
+    def build_text(text)
+      return text.to_s.gsub(/^.*\n/, "\n").gsub(/./, ' ')
+    end
+    alias _t build_text
+
+  end
+
+
+end
+
+
+class Main
+
+  RELEASE = '$Release: 0.0.0 $'.split(' ')[1]
+
+  def self.main(argv=ARGV)
+    begin
+      self.new.run(argv)
+      return 0
+    rescue Cmdopt::ParseError => ex
+      $stderr << ex.message << "\n"
+      return 1
+    end
+  end
+
+  def initialize(cmdname=File.basename($0))
+    @cmdname = cmdname
+  end
+
+  def run(argv)
+    parser = build_parser()
+    options = parser.parse(argv)
+    if options['help']
+      s = "Usage: [..options..] #{@cmdname}\n"
+      s << parser.help_message(30)
+      $stdout << s
+      return
+    end
+    if options['version']
+      $stdout << RELEASE << "\n"
+      #$stdout << BabyErubis::RELEASE << "\n"
+      return
+    end
+    #
+    klass  = handle_format(options['format'] || (options['H'] ? 'html' : nil))
+    if options['X']
+      klass = Class.new(klass)
+      klass.class_eval { include BabyErubis::HideTextEnhander }
+    end
+    #
+    freeze = handle_freeze(options['freeze'])
+    tplopt = {:freeze=>freeze}
+    #
+    encoding = options['encoding'] || 'utf-8'
+    context  = options['c']
+    datafile = options['f']
+    show_src = options['x'] || options['X']
+    (argv.empty? ? [nil] : argv).each do |filename|
+      if filename
+        template = klass.new(tplopt).from_file(filename, encoding)
+      else
+        template_str = $stdin.read()
+        template = klass.new(tplopt).from_str(template_str, '(stdin)')
+      end
+      if show_src
+        $stdout << edit_src(template.src, options['N'], options['U'], options['C'])
+      else
+        ctxobj = template.new_context({})
+        handle_datafile(datafile, encoding, ctxobj) if datafile
+        handle_context(context, encoding, ctxobj)   if context
+        output = template.render(ctxobj)
+        $stdout << output
+      end
+    end
+  end
+
+  private
+
+  def build_parser
+    parser = Cmdopt.new(@cmdname)
+    parser.option("-h, --help      : help")
+    parser.option("-v, --version   : version")
+    parser.option("-x              : show ruby code")
+    parser.option("-X              : show ruby code only (no text part)")
+    parser.option("-N              : numbering: add line numbers   (for '-x/-X')")
+    parser.option("-U              : unique: compress empty lines  (for '-x/-X')")
+    parser.option("-C              : compact: remove empty lines   (for '-x/-X')")
+    parser.option("-c context      : context string (yaml inline style or ruby code)")
+    parser.option("-f file         : context data file ('*.yaml' or '*.rb')")
+    parser.option("-H              : same as --format=html")
+    parser.option("    --format={text|html}  : format (default: text)")\
+      .validation {|arg| "'text' or 'html' expected" if arg !~ /\A(text|html)\z/ }
+    parser.option("    --encoding=name       : encoding (default: utf-8)")
+    parser.option("    --freeze={true|false} : use String#freeze() or not")\
+      .validation {|arg| "'true' or 'false' expected" if arg !~ /\A(true|false)\z/ }
+    parser.option("-D")
+    return parser
+  end
+
+  def handle_format(format)
+    case format
+    when nil   ;  return BabyErubis::Text
+    when 'text';  return BabyErubis::Text
+    when 'html';  return BabyErubis::Html
+    else
+      raise "** unreachable: format=#{format.inspect}"
+    end
+  end
+
+  def handle_freeze(freeze)
+    case freeze
+    when nil    ;  return nil
+    when 'true' ;  return true
+    when 'false';  return false
+    else
+      raise "** unreachable: options['freeze']=#{options['freeze'].inspect}"
+    end
+  end
+
+  def handle_context(context_str, encoding, context_obj)
+    if context_str.nil? || context_str.empty?
+      return nil
+    elsif context_str =~ /\A\{/
+      require 'yaml'
+      dict = YAML.load(context_str)
+      dict.is_a?(Hash)  or
+        raise Cmdopt::ParseError.new("-c '#{context_str}': YAML mapping expected.")
+      dict.each {|k, v| context_obj.instance_variable_set("@#{k}", v) }
+    else
+      _eval(context_str, context_obj)
+    end
+    return context_obj
+  end
+
+  def handle_datafile(datafile, encoding, context_obj)
+    return nil unless datafile
+    case datafile
+    when /\.ya?ml\z/
+      require 'yaml'
+      dict = File.open(datafile, "rb:utf-8") {|f| YAML.load(f) }
+      dict.is_a?(Hash)  or
+        raise Cmdopt::ParseError.new("-f #{datafile}: YAML mapping expected.")
+      dict.each {|k, v| context_obj.instance_variable_set("@#{k}", v) }
+    when /\.json\z/
+      require 'json'
+      json_str = File.open(datafile, "rb:utf-8") {|f| f.read() }
+      dict = JSON.load(json_str)
+      dict.is_a?(Hash)  or
+        raise Cmdopt::ParseError.new("-f #{datafile}: JSON object expected.")
+      dict.each {|k, v| context_obj.instance_variable_set("@#{k}", v) }
+    when /\.rb\z/
+      context_str = File.open(datafile, "rb:utf-8") {|f| f.read() }
+      _eval(context_str, context_obj)
+    end
+    return context_obj
+  end
+
+  def _eval(_context_str, _context_obj)
+    _context_obj.instance_eval(_context_str)
+  end
+
+  def edit_src(src, numbering, unique, compact)
+    if numbering  # -N
+      i = 0
+      src = src.gsub(/^/) { "%4d: " % (i+=1) }
+      src = src.gsub(/(^ *\d+:\s*\n)+/, "\n")  if unique   # -U
+      src = src.gsub(/^ *\d+:\s*\n/, '')       if compact  # -C
+    else
+      src = src.gsub(/(^\s*\n)+/, "\n")        if unique   # -U
+      src = src.gsub(/^\s*\n/, '')             if compact  # -C
+    end
+    return src
+  end
+
+
+end
+
+
+#if __FILE__ == $0
+  exit Main.main() unless defined? NOEXEC_SCRIPT
+#end
