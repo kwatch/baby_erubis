@@ -370,7 +370,7 @@ class Main
       require 'yaml'
       begin
         dict = YAML.load(context_str)
-      rescue SyntaxError => ex
+      rescue Psych::SyntaxError => ex
         errmsg = "(#{ex.class}) #{ex.to_s.sub(/\(<unknown>\): /, '')}"
         raise Cmdopt::ParseError.new("-c '#{context_str}': YAML syntax error: #{errmsg}")
       end
@@ -395,7 +395,7 @@ class Main
       require 'yaml'
       begin
         dict = File.open(datafile, "rb:utf-8") {|f| YAML.load(f) }
-      rescue SyntaxError => ex
+      rescue Psych::SyntaxError => ex
         errmsg = ex.to_s.sub(/\(<unknown>\): /, '')
         raise Cmdopt::ParseError.new("-f #{datafile}: YAML syntax error: (#{ex.class}) #{errmsg}")
       end
