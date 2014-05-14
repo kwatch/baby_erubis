@@ -82,15 +82,15 @@ Usage: $SCRIPT [..options..] [erubyfile]
       --freeze={true|false}   : use String#freeze() or not
 
 Example:
-  ## show compiled code
+  ## convert eRuby file into Ruby code
   $ $SCRIPT -x   file.erb     # text
   $ $SCRIPT -xH  file.erb     # html
   $ $SCRIPT -X   file.erb     # embedded code only
   $ $SCRIPT -XNU file.erb     # with line number
-  ## render eruby file with context data
-  $ $SCRIPT -c '{items: [A, B, C]}'    file.erb    # YAML
-  $ $SCRIPT -c '@items=["A","B","C"]}' file.erb    # Ruby
-  $ $SCRIPT -f data.yaml file.erb   # or *.json, *.rb
+  ## render eRuby file with context data
+  $ $SCRIPT -c '{items: [A, B, C]}'   file.erb    # YAML
+  $ $SCRIPT -c '@items=["A","B","C"]' file.erb    # Ruby
+  $ $SCRIPT -f data.yaml file.erb                 # or -f *.json, *.rb
 END
 
   ERUBY_TEMPLATE = <<'END'
