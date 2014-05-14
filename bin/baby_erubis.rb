@@ -410,6 +410,8 @@ class Main
       kind = 'Ruby'
       context_str = File.open(datafile, "rb:utf-8") {|f| f.read() }
       _eval(context_str, context_obj)                              # raises SyntaxError
+    else
+      raise Cmdopt::ParseError.new("-f #{datafile}: unknown suffix (expected '.yaml', '.json', or '.rb').")
     end
     return context_obj
   rescue Errno::ENOENT => ex

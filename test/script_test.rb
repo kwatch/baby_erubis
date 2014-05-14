@@ -451,6 +451,18 @@ END
       assert_equal expected, serr
     end
 
+    it "reports error when unknown data file suffix." do
+      ctx_str = '{"title": "Love&Peace", "items": ["A","B","C"]}'
+      ctx_file = "tmpdata.js"
+      sout, serr = with_erubyfile do |fname|
+        with_tmpfile(ctx_file, ctx_str) do
+          dummy_stdio { Main.main(["-Hf#{ctx_file}", fname]) }
+        end
+      end
+      assert_equal "", sout
+      assert_equal "-f #{ctx_file}: unknown suffix (expected '.yaml', '.json', or '.rb').\n", serr
+    end
+
   end
 
 
