@@ -75,7 +75,7 @@ Usage: [..options..] #{File.basename($0)}
   -U                          : unique: compress empty lines  (for '-x/-X')
   -C                          : compact: remove empty lines   (for '-x/-X')
   -c context                  : context string (yaml inline style or ruby code)
-  -f file                     : context data file ('*.yaml' or '*.rb')
+  -f file                     : context data file (*.yaml, *.json, or *.rb)
   -H                          : same as --format=html
       --format={text|html}    : format (default: text)
       --encoding=name         : encoding (default: utf-8)

@@ -329,7 +329,7 @@ class Main
     parser.option("-U              : unique: compress empty lines  (for '-x/-X')")
     parser.option("-C              : compact: remove empty lines   (for '-x/-X')")
     parser.option("-c context      : context string (yaml inline style or ruby code)")
-    parser.option("-f file         : context data file ('*.yaml' or '*.rb')")
+    parser.option("-f file         : context data file (*.yaml, *.json, or *.rb)")
     parser.option("-H              : same as --format=html")
     parser.option("    --format={text|html}  : format (default: text)")\
       .validation {|arg| "'text' or 'html' expected" if arg !~ /\A(text|html)\z/ }
