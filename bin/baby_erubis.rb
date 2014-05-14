@@ -368,12 +368,22 @@ class Main
       return nil
     elsif context_str =~ /\A\{/
       require 'yaml'
-      dict = YAML.load(context_str)
+      begin
+        dict = YAML.load(context_str)
+      rescue SyntaxError => ex
+        errmsg = "(#{ex.class}) #{ex.to_s.sub(/\(<unknown>\): /, '')}"
+        raise Cmdopt::ParseError.new("-c '#{context_str}': YAML syntax error: #{errmsg}")
+      end
       dict.is_a?(Hash)  or
         raise Cmdopt::ParseError.new("-c '#{context_str}': YAML mapping expected.")
       dict.each {|k, v| context_obj.instance_variable_set("@#{k}", v) }
     else
-      _eval(context_str, context_obj)
+      begin
+        _eval(context_str, context_obj)
+      rescue SyntaxError => ex
+        errmsg = "(#{ex.class}) #{ex.to_s.sub(/\(eval\):\d: syntax error, /, '')}"
+        raise Cmdopt::ParseError.new("-c '#{context_str}': Ruby syntax error: #{errmsg}")
+      end
     end
     return context_obj
   end
@@ -383,22 +393,39 @@ class Main
     case datafile
     when /\.ya?ml\z/
       require 'yaml'
-      dict = File.open(datafile, "rb:utf-8") {|f| YAML.load(f) }
+      begin
+        dict = File.open(datafile, "rb:utf-8") {|f| YAML.load(f) }
+      rescue SyntaxError => ex
+        errmsg = ex.to_s.sub(/\(<unknown>\): /, '')
+        raise Cmdopt::ParseError.new("-f #{datafile}: YAML syntax error: (#{ex.class}) #{errmsg}")
+      end
       dict.is_a?(Hash)  or
         raise Cmdopt::ParseError.new("-f #{datafile}: YAML mapping expected.")
       dict.each {|k, v| context_obj.instance_variable_set("@#{k}", v) }
     when /\.json\z/
       require 'json'
       json_str = File.open(datafile, "rb:utf-8") {|f| f.read() }
-      dict = JSON.load(json_str)
+      begin
+        dict = JSON.load(json_str)
+      rescue JSON::ParserError => ex
+        errmsg = ex.to_s.sub(/^(\d+): (.*) at .*\n?/, '\1: \2')
+        raise Cmdopt::ParseError.new("-f #{datafile}: JSON syntax error: (#{ex.class}) #{errmsg}")
+      end
       dict.is_a?(Hash)  or
         raise Cmdopt::ParseError.new("-f #{datafile}: JSON object expected.")
       dict.each {|k, v| context_obj.instance_variable_set("@#{k}", v) }
     when /\.rb\z/
       context_str = File.open(datafile, "rb:utf-8") {|f| f.read() }
-      _eval(context_str, context_obj)
+      begin
+        _eval(context_str, context_obj)
+      rescue SyntaxError => ex
+        errmsg = ex.to_s.sub(/\(eval\):\d: syntax error, /, '')
+        raise Cmdopt::ParseError.new("-f #{datafile}: Ruby syntax error: (#{ex.class}) #{errmsg}")
+      end
     end
     return context_obj
+  rescue Errno::ENOENT => ex
+    raise Cmdopt::ParseError.new("-f #{datafile}: file not found.")
   end
 
   def _eval(_context_str, _context_obj)
