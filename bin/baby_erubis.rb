@@ -257,8 +257,6 @@ end
 
 class Main
 
-  RELEASE = '$Release: 0.0.0 $'.split(' ')[1]
-
   def self.main(argv=ARGV)
     begin
       self.new.run(argv)
@@ -283,8 +281,7 @@ class Main
       return
     end
     if options['version']
-      $stdout << RELEASE << "\n"
-      #$stdout << BabyErubis::RELEASE << "\n"
+      $stdout << BabyErubis::RELEASE << "\n"
       return
     end
     #
