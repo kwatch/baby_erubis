@@ -564,3 +564,47 @@ END
 
 
 end
+
+
+describe Cmdopt::Parser do
+
+  let(:parser) { Main.new.__send__(:build_parser) }
+
+
+  describe '#parse()' do
+
+    it "parses short options." do
+      argv = ["-vh", "-xc", "{x: 1}", "-fdata.txt", "file1", "file2"]
+      options = parser.parse(argv)
+      expected = {'version'=>true, 'help'=>true, 'x'=>true, 'c'=>'{x: 1}', 'f'=>'data.txt'}
+      assert_equal expected, options
+      assert_equal ["file1", "file2"], argv
+    end
+
+    it "parses long options" do
+      argv = ["--help", "--version", "--format=html", "--freeze=true", "file1", "file2"]
+      options = parser.parse(argv)
+      expected = {'version'=>true, 'help'=>true, 'format'=>'html', 'freeze'=>'true'}
+      assert_equal expected, options
+      assert_equal ["file1", "file2"], argv
+    end
+
+    it "raises error when required argument of short option is missing." do
+      argv = ["-f"]
+      ex = assert_raises Cmdopt::ParseError do
+        options = parser.parse(argv)
+      end
+      assert_equal "#{File.basename($0)}: -f: argument required.", ex.message
+    end
+
+    it "raises error when required argument of long option is missing." do
+      argv = ["--format", "file1"]
+      ex = assert_raises Cmdopt::ParseError do
+        options = parser.parse(argv)
+      end
+      assert_equal "#{File.basename($0)}: --format: argument required.", ex.message
+    end
+
+  end
+
+end
