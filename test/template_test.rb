@@ -14,18 +14,17 @@ require 'minitest/autorun'
 require 'baby_erubis'
 
 
-def _modify(ruby_code)
-  if (''.freeze).equal?(''.freeze)
-    return ruby_code.gsub(/([^'])';/m, "\\1'.freeze;")
-  else
-    return ruby_code
-  end
-end
-
-
 describe BabyErubis::Template do
 
   let(:template) { BabyErubis::Text.new() }
+
+  def _modify(ruby_code)
+    if (''.freeze).equal?(''.freeze)
+      return ruby_code.gsub(/([^'])';/m, "\\1'.freeze;")
+    else
+      return ruby_code
+    end
+  end
 
 
   describe '#parse()' do
@@ -366,6 +365,14 @@ end
 
 describe BabyErubis::HtmlTemplate do
 
+  def _modify(ruby_code)
+    if (''.freeze).equal?(''.freeze)
+      return ruby_code.gsub(/([^'])';/m, "\\1'.freeze;")
+    else
+      return ruby_code
+    end
+  end
+
   input = <<'END'
 <html>
   <h1><%= @title %></h1>
@@ -389,7 +396,6 @@ _buf = ''; _buf << '<html>
 </html>
 '; _buf.to_s
 END
-  source = _modify(source)
   output = <<'END'
 <html>
   <h1>Example</h1>
@@ -409,7 +415,7 @@ END
 
     it "handles embedded expression with escaping." do
       tmpl = BabyErubis::Html.new.from_str(input)
-      assert_equal source, tmpl.src
+      assert_equal _modify(source), tmpl.src
     end
 
   end
