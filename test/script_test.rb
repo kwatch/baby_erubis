@@ -11,15 +11,18 @@ $: << libpath unless $:.include?(libpath)
 
 require 'minitest/autorun'
 
+## enforce not to use String#freeze() even if RUBY_VERSION >= 2.1
 require 'baby_erubis'
 BabyErubis::Template.class_eval do
   remove_const :FREEZE
   FREEZE = false
 end
 
+## load script file ('bin/baby_erubis.rb')
 NOEXEC_SCRIPT = true
 require File.join(File.dirname(libpath), 'bin', 'baby_erubis.rb')
 
+## helper to steal stdin, stdout and stderr
 require 'stringio'
 def dummy_stdio(input=nil)
   stdin, stdout, stderr = $stdin, $stdout, $stderr
@@ -34,7 +37,7 @@ ensure
   $stderr = stderr
 end
 
-
+## helper to create dummy file temporarily
 def with_tmpfile(filename, content)
   File.open(filename, 'wb') {|f| f.write(content) }
   yield filename
@@ -42,7 +45,7 @@ ensure
   File.unlink(filename) if File.exist?(filename)
 end
 
-
+## helper to create eruby file temporarily
 def with_erubyfile(content=nil)
   content ||= ERUBY_TEMPLATE
   filename = "test_eruby.rhtml"
