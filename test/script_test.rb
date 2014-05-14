@@ -86,11 +86,13 @@ Example:
   $ $SCRIPT -x   file.erb     # text
   $ $SCRIPT -xH  file.erb     # html
   $ $SCRIPT -X   file.erb     # embedded code only
-  $ $SCRIPT -XNU file.erb     # with line number
   ## render eRuby file with context data
   $ $SCRIPT -c '{items: [A, B, C]}'   file.erb    # YAML
   $ $SCRIPT -c '@items=["A","B","C"]' file.erb    # Ruby
   $ $SCRIPT -f data.yaml file.erb                 # or -f *.json, *.rb
+  ## debug eRuby file
+  $ $SCRIPT -xH file.erb | ruby -wc     # check syntax error
+  $ $SCRIPT -XHNU file.erb              # show embedded ruby code
 END
 
   ERUBY_TEMPLATE = <<'END'

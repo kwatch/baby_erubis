@@ -348,11 +348,13 @@ Example:
   $ #{@cmdname} -x   file.erb     # text
   $ #{@cmdname} -xH  file.erb     # html
   $ #{@cmdname} -X   file.erb     # embedded code only
-  $ #{@cmdname} -XNU file.erb     # with line number
   ## render eRuby file with context data
   $ #{@cmdname} -c '{items: [A, B, C]}'   file.erb    # YAML
   $ #{@cmdname} -c '@items=["A","B","C"]' file.erb    # Ruby
   $ #{@cmdname} -f data.yaml file.erb                 # or -f *.json, *.rb
+  ## debug eRuby file
+  $ #{@cmdname} -xH file.erb | ruby -wc     # check syntax error
+  $ #{@cmdname} -XHNU file.erb              # show embedded ruby code
 END
     return s
   end
