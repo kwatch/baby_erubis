@@ -275,9 +275,7 @@ class Main
     parser = build_parser()
     options = parser.parse(argv)
     if options['help']
-      s = "Usage: #{@cmdname} [..options..] [erubyfile]\n"
-      s << parser.help_message(30)
-      $stdout << s
+      $stdout << build_help_message(parser)
       return
     end
     if options['version']
@@ -338,6 +336,12 @@ class Main
       .validation {|arg| "'true' or 'false' expected" if arg !~ /\A(true|false)\z/ }
     parser.option("-D")
     return parser
+  end
+
+  def build_help_message(parser)
+    s = "Usage: #{@cmdname} [..options..] [erubyfile]\n"
+    s << parser.help_message(30)
+    return s
   end
 
   def handle_format(format)
