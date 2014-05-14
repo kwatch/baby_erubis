@@ -275,7 +275,7 @@ class Main
     parser = build_parser()
     options = parser.parse(argv)
     if options['help']
-      s = "Usage: [..options..] #{@cmdname}\n"
+      s = "Usage: #{@cmdname} [..options..] [erubyfile]\n"
       s << parser.help_message(30)
       $stdout << s
       return

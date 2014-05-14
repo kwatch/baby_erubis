@@ -66,7 +66,7 @@ describe Main do
   end
 
   help_message = <<"END"
-Usage: [..options..] #{File.basename($0)}
+Usage: #{File.basename($0)} [..options..] [erubyfile]
   -h, --help                  : help
   -v, --version               : version
   -x                          : show ruby code
