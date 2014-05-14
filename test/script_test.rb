@@ -171,7 +171,7 @@ END
   describe '-v, --version' do
 
     it "prints release version." do
-      expected = "#{Main::RELEASE}\n"
+      expected = "#{BabyErubis::RELEASE}\n"
       sout, serr = dummy_stdio { Main.main(["-v"]) }
       assert_equal expected, sout
       assert_equal "", serr
