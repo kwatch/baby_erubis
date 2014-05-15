@@ -65,8 +65,8 @@ describe Main do
     end
   end
 
-  help_message = <<"END"
-Usage: [..options..] #{File.basename($0)}
+  help_message = <<'END'.gsub(/\$SCRIPT/, File.basename($0))
+Usage: $SCRIPT [..options..] [erubyfile]
   -h, --help                  : help
   -v, --version               : version
   -x                          : show ruby code
@@ -75,11 +75,24 @@ Usage: [..options..] #{File.basename($0)}
   -U                          : unique: compress empty lines  (for '-x/-X')
   -C                          : compact: remove empty lines   (for '-x/-X')
   -c context                  : context string (yaml inline style or ruby code)
-  -f file                     : context data file ('*.yaml' or '*.rb')
+  -f file                     : context data file (*.yaml, *.json, or *.rb)
   -H                          : same as --format=html
       --format={text|html}    : format (default: text)
       --encoding=name         : encoding (default: utf-8)
       --freeze={true|false}   : use String#freeze() or not
+
+Example:
+  ## convert eRuby file into Ruby code
+  $ $SCRIPT -x   file.erb     # text
+  $ $SCRIPT -xH  file.erb     # html
+  $ $SCRIPT -X   file.erb     # embedded code only
+  ## render eRuby file with context data
+  $ $SCRIPT -c '{items: [A, B, C]}'   file.erb    # YAML
+  $ $SCRIPT -c '@items=["A","B","C"]' file.erb    # Ruby
+  $ $SCRIPT -f data.yaml file.erb                 # or -f *.json, *.rb
+  ## debug eRuby file
+  $ $SCRIPT -xH file.erb | ruby -wc     # check syntax error
+  $ $SCRIPT -XHNU file.erb              # show embedded ruby code
 END
 
   ERUBY_TEMPLATE = <<'END'

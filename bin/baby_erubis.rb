@@ -275,9 +275,7 @@ class Main
     parser = build_parser()
     options = parser.parse(argv)
     if options['help']
-      s = "Usage: [..options..] #{@cmdname}\n"
-      s << parser.help_message(30)
-      $stdout << s
+      $stdout << build_help_message(parser)
       return
     end
     if options['version']
@@ -329,7 +327,7 @@ class Main
     parser.option("-U              : unique: compress empty lines  (for '-x/-X')")
     parser.option("-C              : compact: remove empty lines   (for '-x/-X')")
     parser.option("-c context      : context string (yaml inline style or ruby code)")
-    parser.option("-f file         : context data file ('*.yaml' or '*.rb')")
+    parser.option("-f file         : context data file (*.yaml, *.json, or *.rb)")
     parser.option("-H              : same as --format=html")
     parser.option("    --format={text|html}  : format (default: text)")\
       .validation {|arg| "'text' or 'html' expected" if arg !~ /\A(text|html)\z/ }
@@ -338,6 +336,27 @@ class Main
       .validation {|arg| "'true' or 'false' expected" if arg !~ /\A(true|false)\z/ }
     parser.option("-D")
     return parser
+  end
+
+  def build_help_message(parser)
+    s = "Usage: #{@cmdname} [..options..] [erubyfile]\n"
+    s << parser.help_message(30)
+    s << "\n"
+    s << <<"END"
+Example:
+  ## convert eRuby file into Ruby code
+  $ #{@cmdname} -x   file.erb     # text
+  $ #{@cmdname} -xH  file.erb     # html
+  $ #{@cmdname} -X   file.erb     # embedded code only
+  ## render eRuby file with context data
+  $ #{@cmdname} -c '{items: [A, B, C]}'   file.erb    # YAML
+  $ #{@cmdname} -c '@items=["A","B","C"]' file.erb    # Ruby
+  $ #{@cmdname} -f data.yaml file.erb                 # or -f *.json, *.rb
+  ## debug eRuby file
+  $ #{@cmdname} -xH file.erb | ruby -wc     # check syntax error
+  $ #{@cmdname} -XHNU file.erb              # show embedded ruby code
+END
+    return s
   end
 
   def handle_format(format)
