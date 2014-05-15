@@ -41,6 +41,24 @@ Render template file:
     print output
 
 
+(Use `BabyErubis::Text` instead of `BabyErubis::Html` when rendering plain text.)
+
+
+Command-line examples (see `baby_erubis.rb --help` for details):
+
+    ## convert eRuby file into Ruby code
+    $ baby_erubis.rb -x   file.erb     # text
+    $ baby_erubis.rb -xH  file.erb     # html
+    $ baby_erubis.rb -X   file.erb     # embedded code only
+    ## render eRuby file with context data
+    $ baby_erubis.rb -c '{items: [A, B, C]}'   file.erb    # YAML
+    $ baby_erubis.rb -c '@items=["A","B","C"]' file.erb    # Ruby
+    $ baby_erubis.rb -f data.yaml file.erb                 # or -f *.json, *.rb
+    ## debug eRuby file
+    $ baby_erubis.rb -xH file.erb | ruby -wc     # check syntax error
+    $ baby_erubis.rb -XHNU file.erb              # show embedded ruby code
+
+
 
 Template Syntax
 ===============
