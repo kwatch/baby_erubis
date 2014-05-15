@@ -393,13 +393,14 @@ END
       _eval(context_str, context_obj)      # raises SyntaxError
     end
     return context_obj
-  rescue Psych::SyntaxError, SyntaxError => ex
+  #rescue Psych::SyntaxError, SyntaxError => ex
+  rescue Exception => ex
     errmsg = ex.to_s
-    case ex
-    when Psych::SyntaxError;  errmsg = errmsg.sub(/\(<unknown>\): /, '')
-    when SyntaxError;         errmsg = errmsg.sub(/\(eval\):\d: syntax error, /, '')
+    case ex.class.name
+    when 'Psych::SyntaxError';  errmsg = errmsg.sub(/\(<unknown>\): /, '')
+    when 'SyntaxError';         errmsg = errmsg.sub(/\(eval\):\d: syntax error, /, '')
     else
-      raise "unreachable: ex=#{ex.inspect}"
+      raise ex
     end
     raise Cmdopt::ParseError.new("-c '#{context_str}': #{kind} syntax error: (#{ex.class.name}) #{errmsg}")
   end
@@ -432,14 +433,15 @@ END
     return context_obj
   rescue Errno::ENOENT => ex
     raise Cmdopt::ParseError.new("-f #{datafile}: file not found.")
-  rescue Psych::SyntaxError, JSON::ParserError, SyntaxError => ex
+  #rescue Psych::SyntaxError, JSON::ParserError, SyntaxError => ex
+  rescue Exception => ex
     errmsg = ex.to_s
-    case ex
-    when Psych::SyntaxError;  errmsg = errmsg.sub(/\(<unknown>\): /, '')
-    when JSON::ParserError;   errmsg = errmsg.sub(/^(\d+): (.*) at .*\n?/, '\1: \2')
-    when SyntaxError;         errmsg = errmsg.sub(/\(eval\):\d: syntax error, /, '')
+    case ex.class.name
+    when 'Psych::SyntaxError';  errmsg = errmsg.sub(/\(<unknown>\): /, '')
+    when 'JSON::ParserError';   errmsg = errmsg.sub(/^(\d+): (.*) at .*\n?/, '\1: \2')
+    when 'SyntaxError';         errmsg = errmsg.sub(/\(eval\):\d: syntax error, /, '')
     else
-      raise "unreachable: ex=#{ex.inspect}"
+      raise ex
     end
     raise Cmdopt::ParseError.new("-f #{datafile}: #{kind} syntax error: (#{ex.class.name}) #{errmsg}")
   end
