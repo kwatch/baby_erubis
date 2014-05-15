@@ -381,9 +381,9 @@ END
 
   def handle_context(context_str, encoding, context_obj)
     return nil if context_str.nil? || context_str.empty?
-    require 'yaml'
     if context_str =~ /\A\{/
       kind = 'YAML'
+      require 'yaml'
       dict = YAML.load(context_str)        # raises Psych::SyntaxError
       dict.is_a?(Hash)  or
         raise Cmdopt::ParseError.new("-c '#{context_str}': YAML mapping expected.")
@@ -407,17 +407,17 @@ END
 
   def handle_datafile(datafile, encoding, context_obj)
     return nil unless datafile
-    require 'yaml'
-    require 'json'
     case datafile
     when /\.ya?ml\z/
       kind = 'YAML'
+      require 'yaml'
       dict = File.open(datafile, "rb:utf-8") {|f| YAML.load(f) }   # raises Psych::SyntaxError
       dict.is_a?(Hash)  or
         raise Cmdopt::ParseError.new("-f #{datafile}: YAML mapping expected.")
       dict.each {|k, v| context_obj.instance_variable_set("@#{k}", v) }
     when /\.json\z/
       kind = 'JSON'
+      require 'json'
       json_str = File.open(datafile, "rb:utf-8") {|f| f.read() }
       dict = JSON.load(json_str)                                   # raises JSON::ParserError
       dict.is_a?(Hash)  or
