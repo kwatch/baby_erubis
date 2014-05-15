@@ -10,7 +10,7 @@ BabyErubis is an yet another eRuby implementation, based on Erubis.
 * Supports HTML as well as plain text
 * Accepts both template file and template string
 
-BabyErubis support Ruby 1.9 or higher, and may work on 1.8, probably.
+BabyErubis support Ruby 1.9 or higher, and will work on 1.8 very well.
 
 
 

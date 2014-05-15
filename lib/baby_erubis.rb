@@ -40,7 +40,9 @@ module BabyErubis
     end
 
     def from_file(filename, encoding='utf-8')
-      input = File.open(filename, "rb:#{encoding}") {|f| f.read() }
+      mode = "rb:#{encoding}"
+      mode = "rb" if RUBY_VERSION < '1.9'
+      input = File.open(filename, mode) {|f| f.read() }
       compile(parse(input), filename, 1)
       return self
     end
