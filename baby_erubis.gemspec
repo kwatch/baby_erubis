@@ -25,14 +25,17 @@ BabyErubis is an yet another eRuby implementation, based on Erubis.
 * Accepts both template file and template string
 * Easy to customize
 
-BabyErubis support Ruby 1.9 or higher.
+BabyErubis support Ruby 1.9 or higher, and will work on 1.8 very well.
 END
 
   ## files
   files = []
   files += Dir.glob('lib/*.rb')
   files += Dir.glob('test/*.rb')
+  files += ['bin/baby_erubis']
   files += %w[README.md MIT-LICENSE setup.rb baby_erubis.gemspec Rakefile]
   s.files       = files
+  s.executables = ['baby_erubis']
+  s.bindir      = 'bin'
   s.test_file   = 'test/run_all.rb'
 end
