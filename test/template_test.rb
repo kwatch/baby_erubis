@@ -272,6 +272,14 @@ END
       assert_equal expected, output
     end
 
+    it "accepts nil as argument." do
+      input    = "self.class is <%= self.class %>"
+      expected = "self.class is BabyErubis::TemplateContext"
+      context = nil
+      output = template.from_str(input).render(context)
+      assert_equal expected, output
+    end
+
   end
 
 
