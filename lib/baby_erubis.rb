@@ -96,7 +96,7 @@ module BabyErubis
     end
 
     def render(context={})
-      ctxobj = context.is_a?(Hash) ? new_context(context) : context
+      ctxobj = context.nil? || context.is_a?(Hash) ? new_context(context) : context
       return ctxobj.instance_eval(&@proc)
     end
 
