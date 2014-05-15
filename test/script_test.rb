@@ -376,6 +376,7 @@ END
                             ^
 "
       expected = expected.sub(/\$end/, "end-of-input") if RUBY_VERSION =~ /^2\./
+      expected = "-c '@title = 'Love&Peace' @items = ['A','B','C']': Ruby syntax error: (SyntaxError) expecting $end: (eval):1:28\n" if defined?(RUBY_ENGINE) && RUBY_ENGINE == 'rbx'
       assert_equal "", sout
       assert_equal expected, serr
     end
@@ -468,6 +469,7 @@ END
 @title = 'Love&Peace' @items = ['A','B','C']
                             ^\n"
       expected = expected.sub(/\$end/, "end-of-input") if RUBY_VERSION =~ /^2\./
+      expected = "-f #{ctx_file}: Ruby syntax error: (SyntaxError) expecting $end: (eval):1:28\n" if defined?(RUBY_ENGINE) && RUBY_ENGINE == 'rbx'
       assert_equal "", sout
       assert_equal expected, serr
     end
