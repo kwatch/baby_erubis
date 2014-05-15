@@ -20,7 +20,7 @@ require 'minitest/autorun'
 
 ## load script file ('bin/baby_erubis.rb')
 NOEXEC_SCRIPT = true
-require File.join(File.dirname(libpath), 'bin', 'baby_erubis.rb')
+load File.join(File.dirname(libpath), 'bin', 'baby_erubis')
 
 ## helper to steal stdin, stdout and stderr
 require 'stringio'
