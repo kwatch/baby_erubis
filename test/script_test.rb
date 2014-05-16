@@ -65,6 +65,10 @@ describe Main do
     end
   end
 
+  def on_rubinius?
+    return defined?(RUBY_ENGINE) && RUBY_ENGINE == 'rbx'
+  end
+
   help_message = <<'END'.gsub(/\$SCRIPT/, File.basename($0))
 Usage: $SCRIPT [..options..] [erubyfile]
   -h, --help                  : help
@@ -351,12 +355,16 @@ END
       assert_equal OUTPUT_HTML, sout
       assert_equal "", serr
       ## when syntax error exists
-      context_str = "{title:Love&Peace,items:[A,B,C]}"
+      context_str = "{title:Love&Peace,items:[A,B,C]"
       sout, serr = with_erubyfile do |fname|
         dummy_stdio { Main.main(['-Hc', context_str, fname]) }
       end
       assert_equal "", sout
-      assert_equal "-c '{title:Love&Peace,items:[A,B,C]}': YAML syntax error: (Psych::SyntaxError) found unexpected ':' while scanning a plain scalar at line 1 column 2\n", serr
+      if on_rubinius?
+        assert_equal "-c '{title:Love&Peace,items:[A,B,C]': YAML syntax error: (ArgumentError) col 31\n", serr
+      else
+        assert_equal "-c '{title:Love&Peace,items:[A,B,C]': YAML syntax error: (Psych::SyntaxError) found unexpected ':' while scanning a plain scalar at line 1 column 2\n", serr
+      end
     end
 
     it "can specify context data as Ruby code." do
@@ -376,7 +384,7 @@ END
                             ^
 "
       expected = expected.sub(/\$end/, "end-of-input") if RUBY_VERSION =~ /^2\./
-      expected = "-c '@title = 'Love&Peace' @items = ['A','B','C']': Ruby syntax error: (SyntaxError) expecting $end: (eval):1:28\n" if defined?(RUBY_ENGINE) && RUBY_ENGINE == 'rbx'
+      expected = "-c '@title = 'Love&Peace' @items = ['A','B','C']': Ruby syntax error: (SyntaxError) expecting $end: (eval):1:28\n" if on_rubinius?
       assert_equal "", sout
       assert_equal expected, serr
     end
@@ -403,14 +411,18 @@ END
       assert_equal "", sout
       assert_equal "-f #{ctx_file}: file not found.\n", serr
       ## when syntax error exists
-      ctx_str = "{title:Love&Peace,items:[A, B, C]}"
+      ctx_str = "{title:Love&Peace,items:[A, B, C]"
       sout, serr = with_erubyfile do |fname|
         with_tmpfile(ctx_file, ctx_str) do
           dummy_stdio { Main.main(['-Hf', ctx_file, fname]) }
         end
       end
       assert_equal "", sout
-      assert_equal "-f #{ctx_file}: YAML syntax error: (Psych::SyntaxError) found unexpected ':' while scanning a plain scalar at line 1 column 2\n", serr
+      if on_rubinius?
+        assert_equal "-f #{ctx_file}: YAML syntax error: (ArgumentError) col 33\n", serr
+      else
+        assert_equal "-f #{ctx_file}: YAML syntax error: (Psych::SyntaxError) found unexpected ':' while scanning a plain scalar at line 1 column 2\n", serr
+      end
     end
 
     it "can specify context data in JSON format." do
