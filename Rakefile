@@ -36,7 +36,7 @@ end
 
 
 desc "copy files into 'dist/#{RELEASE}'"
-task :dist do
+task :dist => :clean do
   require_release_number()
   spec_src = File.open('baby_erubis.gemspec') {|f| f.read }
   spec = eval spec_src
