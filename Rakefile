@@ -29,6 +29,12 @@ task :test do
 end
 
 
+desc "remove *.rbc"
+task :clean do
+  rm_f [Dir.glob("lib/**/*.rbc"), Dir.glob("test/**/*.rbc")]
+end
+
+
 desc "copy files into 'dist/#{RELEASE}'"
 task :dist do
   require_release_number()
