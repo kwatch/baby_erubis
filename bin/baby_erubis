@@ -401,7 +401,11 @@ END
     when 'Psych::SyntaxError';  errmsg = errmsg.sub(/\(<unknown>\): /, '')
     when 'SyntaxError';         errmsg = errmsg.sub(/\(eval\):\d: syntax error, /, '')
     else
-      raise ex
+      if ex.class == ArgumentError && errmsg =~ /^syntax error on line \d+, (col \d+)/
+        errmsg = $1    # for Rubinius
+      else
+        raise ex
+      end
     end
     raise Cmdopt::ParseError.new("-c '#{context_str}': #{kind} syntax error: (#{ex.class.name}) #{errmsg}")
   end
@@ -442,7 +446,11 @@ END
     when 'JSON::ParserError';   errmsg = errmsg.sub(/^(\d+): (.*) at .*\n?/, '\1: \2')
     when 'SyntaxError';         errmsg = errmsg.sub(/\(eval\):\d: syntax error, /, '')
     else
-      raise ex
+      if ex.class == ArgumentError && errmsg =~ /^syntax error on line \d+, (col \d+)/
+        errmsg = $1    # for Rubinius
+      else
+        raise ex
+      end
     end
     raise Cmdopt::ParseError.new("-f #{datafile}: #{kind} syntax error: (#{ex.class.name}) #{errmsg}")
   end
