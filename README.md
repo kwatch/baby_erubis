@@ -320,6 +320,16 @@ Todo
 Changes
 =======
 
+
+Release 1.0.0 (2014-05-17)
+--------------------------
+
+* [enhance] Provides script file `bin/baby_erubis`.
+* [enhance] Supports Ruby 1.8 and Rubinius 2.x.
+* [change]  Define 'BabyErubis::RELEASE'.
+* [bugfix]  'Template#render()' creates context object when nil passed.
+
+
 Release 0.1.0 (2014-05-06)
 --------------------------
 
