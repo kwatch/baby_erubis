@@ -310,6 +310,13 @@ Sample code:
 
 
 
+Todo
+====
+
+* Support Rails syntax (= `<%= form_for do |f| %>`)
+
+
+
 Changes
 =======
 
