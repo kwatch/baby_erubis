@@ -10,7 +10,7 @@ BabyErubis is an yet another eRuby implementation, based on Erubis.
 * Supports HTML as well as plain text
 * Accepts both template file and template string
 
-BabyErubis support Ruby 1.9 or higher, and will work on 1.8 very well.
+BabyErubis supports Ruby >= 1.8 and Rubinius >= 2.0.
 
 
 
@@ -110,7 +110,7 @@ Example:
       end
 
       def render()
-        return TEMPLATE.render(self)
+        return TEMPLATE.render(self)   # use self as context object
       end
 
     end
@@ -123,8 +123,8 @@ Example:
 String#freeze()
 ---------------
 
-BabyErubis supports String#freeze() automatically when Ruby version >= 2.1.
-And you can controll whether to use freeze() or not.
+BabyErubis supports String#freeze() automatically when on Ruby version >= 2.1.
+And you can control whether to use freeze() or not.
 
     template_str = <<'END'
     <div>
