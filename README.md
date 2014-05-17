@@ -72,7 +72,7 @@ Expression in `<%= ... %>` is escaped according to template class.
 * `BabyErubis::Text` doesn't escape anything.
   It justs converts expression into a string.
 * `BabyErubis::Html` escapes html special characters.
-  It converts '< > & " \'' into '&lt; &gt; &amp; &quot; &#39;' respectively.
+  It converts `< > & " '` into `&lt; &gt; &amp; &quot; &#39;` respectively.
 
 (Experimental) `<%- ... -%>` and `<%-= ... -%>` are handled same as
 `<% ... %>` and `<%= ... %>` respectively.
