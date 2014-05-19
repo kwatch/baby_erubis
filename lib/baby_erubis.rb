@@ -79,30 +79,27 @@ module BabyErubis
           code = ("\n" * code.count("\n"))
           if ! ch && lspace && rspace   # trimmed statement
             src << _t("#{spc}#{text}") << code << rspace
-            spc = ""
+            rspace = ""
           else                          # other statement or expression
             src << _t("#{spc}#{text}#{lspace}") << code
-            spc = rspace
           end
         elsif ! ch             # statement
           if lspace && rspace
             src << _t("#{spc}#{text}") << "#{lspace} #{code};#{rspace}"
-            spc = ""
+            rspace = ""
           else
             src << _t("#{spc}#{text}#{lspace}") << " #{code};"
-            spc = rspace
           end
         else                   # expression
           if ch == '='           # expression (escaping)
             src << _t("#{spc}#{text}#{lspace}") << " _buf << #{escaped_expr(code)};"
-            spc = rspace
           elsif ch == '=='       # expression (without escaping)
             src << _t("#{spc}#{text}#{lspace}") << " _buf << (#{code}).to_s;"
-            spc = rspace
           else
             raise "** unreachable: ch=#{ch.inspect}"
           end
         end
+        spc = rspace
       end
       text = pos == 0 ? input : input[pos..-1]   # or $' || input
       src << _t("#{spc}#{text}")
