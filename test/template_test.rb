@@ -184,6 +184,26 @@ END
       assert_equal expected, template.parse(input)
     end
 
+    it "concats spaces around embedded expressions." do
+      input = <<'END'
+<form>
+  <%= f.text :email %>
+  <%= f.password :password %>
+  <%= f.submit 'Login' %>
+</form>
+END
+      expected = <<'END'
+_buf = ''; _buf << '<form>
+  '; _buf << (f.text :email).to_s; _buf << '
+  '; _buf << (f.password :password).to_s; _buf << '
+  '; _buf << (f.submit 'Login').to_s; _buf << '
+</form>
+'; _buf.to_s
+END
+      template = BabyErubis::Text.new(:freeze=>false)
+      assert_equal expected, template.parse(input)
+    end
+
   end
 
 
