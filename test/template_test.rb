@@ -107,14 +107,14 @@ END
       expected = <<'END'
 _buf = '';
 
- _buf << '
-'; _buf << 'x = ';
+
+ _buf << 'x = '.freeze;
 
  _buf << '
-';
+'.freeze;
 
- _buf << '
-'; _buf.to_s
+
+ _buf.to_s
 END
       expected = _modify(expected)
       assert_equal expected, template.parse(input)

@@ -54,8 +54,8 @@ module BabyErubis
 
     attr_reader :src
 
-    #PATTERN = /(^[ \t]*)?<%(==?|\#)?(.*?)%>([ \t]*\r?\n)?/m
-    PATTERN = /(^[ \t]*)?<%-?(==?|\#)? ?(.*?) ?-?%>([ \t]*\r?\n)?/m
+    #PATTERN = /(^[ \t]*)?<%(\#)?(==?)?(.*?)%>([ \t]*\r?\n)?/m
+    PATTERN = /(^[ \t]*)?<%-?(\#)?(==?)? ?(.*?) ?-?%>([ \t]*\r?\n)?/m
 
     def pattern
       return self.class.const_get(:PATTERN)
@@ -70,12 +70,23 @@ module BabyErubis
     def parse(input)
       src = "_buf = '';"       # preamble
       pos = 0
-      input.scan(pattern()) do |lspace, ch, code, rspace|
+      input.scan(pattern()) do |lspace, sharp, ch, code, rspace|
         match = Regexp.last_match
         text  = input[pos, match.begin(0) - pos]
         pos   = match.end(0)
         src << _t(text)
-        if ! ch                # statement
+        if sharp               # comment
+          code = ("\n" * code.count("\n"))
+          if ! ch              # comment (statement)
+            if lspace && rspace
+              src << code << rspace
+            else
+              src << _t(lspace) << code << _t(rspace)
+            end
+          else                 # comment (expression)
+            src << _t(lspace) << code << _t(rspace)
+          end
+        elsif ! ch             # statement
           if lspace && rspace
             src << "#{lspace} #{code};#{rspace}"
           else
@@ -85,8 +96,6 @@ module BabyErubis
           src << _t(lspace) << " _buf << #{escaped_expr(code)};" << _t(rspace)
         elsif ch == '=='       # expression (without escaping)
           src << _t(lspace) << " _buf << (#{code}).to_s;" << _t(rspace)
-        elsif ch == '#'        # comment
-          src << _t(lspace) << ("\n" * code.count("\n")) << _t(rspace)
         else
           raise "** unreachable: ch=#{ch.inspect}"
         end
