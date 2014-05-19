@@ -39,7 +39,7 @@ items:
 END
       expected = <<'END'
 _buf = ''; _buf << 'title: '; _buf << (@title).to_s; _buf << '
-'; _buf << 'items:
+items:
 '; for item in @items;
  _buf << '  - '; _buf << (item).to_s; _buf << '
 '; end;
