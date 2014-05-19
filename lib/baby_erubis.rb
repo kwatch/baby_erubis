@@ -77,13 +77,11 @@ module BabyErubis
         src << _t(text)
         if sharp               # comment
           code = ("\n" * code.count("\n"))
-          if ! ch              # comment (statement)
-            if lspace && rspace
-              src << code << rspace
-            else
-              src << _t(lspace) << code << _t(rspace)
-            end
-          else                 # comment (expression)
+          if ch
+            src << _t(lspace) << code << _t(rspace)
+          elsif lspace && rspace
+            src << code << rspace
+          else
             src << _t(lspace) << code << _t(rspace)
           end
         elsif ! ch             # statement
