@@ -92,12 +92,14 @@ module BabyErubis
           else
             src << _t(lspace) << " #{code};" << _t(rspace)
           end
-        elsif ch == '='        # expression (escaping)
-          src << _t(lspace) << " _buf << #{escaped_expr(code)};" << _t(rspace)
-        elsif ch == '=='       # expression (without escaping)
-          src << _t(lspace) << " _buf << (#{code}).to_s;" << _t(rspace)
-        else
-          raise "** unreachable: ch=#{ch.inspect}"
+        else                   # expression
+          if ch == '='           # expression (escaping)
+            src << _t(lspace) << " _buf << #{escaped_expr(code)};" << _t(rspace)
+          elsif ch == '=='       # expression (without escaping)
+            src << _t(lspace) << " _buf << (#{code}).to_s;" << _t(rspace)
+          else
+            raise "** unreachable: ch=#{ch.inspect}"
+          end
         end
       end
       text = pos == 0 ? input : input[pos..-1]   # or $' || input
