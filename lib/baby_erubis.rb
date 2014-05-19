@@ -69,37 +69,40 @@ module BabyErubis
 
     def parse(input)
       src = "_buf = '';"       # preamble
+      spc = ""
       pos = 0
       input.scan(pattern()) do |lspace, sharp, ch, code, rspace|
         match = Regexp.last_match
         text  = input[pos, match.begin(0) - pos]
         pos   = match.end(0)
-        src << _t(text)
         if sharp               # comment
           code = ("\n" * code.count("\n"))
           if ! ch && lspace && rspace   # trimmed statement
-            src << code << rspace
+            src << _t("#{spc}#{text}") << code << rspace
+            rspace = ""
           else                          # other statement or expression
-            src << _t(lspace) << code << _t(rspace)
+            src << _t("#{spc}#{text}#{lspace}") << code
           end
         elsif ! ch             # statement
           if lspace && rspace
-            src << "#{lspace} #{code};#{rspace}"
+            src << _t("#{spc}#{text}") << "#{lspace} #{code};#{rspace}"
+            rspace = ""
           else
-            src << _t(lspace) << " #{code};" << _t(rspace)
+            src << _t("#{spc}#{text}#{lspace}") << " #{code};"
           end
         else                   # expression
           if ch == '='           # expression (escaping)
-            src << _t(lspace) << " _buf << #{escaped_expr(code)};" << _t(rspace)
+            src << _t("#{spc}#{text}#{lspace}") << " _buf << #{escaped_expr(code)};"
           elsif ch == '=='       # expression (without escaping)
-            src << _t(lspace) << " _buf << (#{code}).to_s;" << _t(rspace)
+            src << _t("#{spc}#{text}#{lspace}") << " _buf << (#{code}).to_s;"
           else
             raise "** unreachable: ch=#{ch.inspect}"
           end
         end
+        spc = rspace
       end
       text = pos == 0 ? input : input[pos..-1]   # or $' || input
-      src << _t(text)
+      src << _t("#{spc}#{text}")
       src << " _buf.to_s\n"    # postamble
       return src
     end

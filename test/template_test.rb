@@ -39,7 +39,7 @@ items:
 END
       expected = <<'END'
 _buf = ''; _buf << 'title: '; _buf << (@title).to_s; _buf << '
-'; _buf << 'items:
+items:
 '; for item in @items;
  _buf << '  - '; _buf << (item).to_s; _buf << '
 '; end;
@@ -180,6 +180,26 @@ END
     it "doesn't use String#freeze when ':freeze=>false' passed to constructor." do
       input = "value=<%== value %>"
       expected = "_buf = ''; _buf << 'value='; _buf << (value).to_s; _buf.to_s\n"
+      template = BabyErubis::Text.new(:freeze=>false)
+      assert_equal expected, template.parse(input)
+    end
+
+    it "concats spaces around embedded expressions." do
+      input = <<'END'
+<form>
+  <%= f.text :email %>
+  <%= f.password :password %>
+  <%= f.submit 'Login' %>
+</form>
+END
+      expected = <<'END'
+_buf = ''; _buf << '<form>
+  '; _buf << (f.text :email).to_s; _buf << '
+  '; _buf << (f.password :password).to_s; _buf << '
+  '; _buf << (f.submit 'Login').to_s; _buf << '
+</form>
+'; _buf.to_s
+END
       template = BabyErubis::Text.new(:freeze=>false)
       assert_equal expected, template.parse(input)
     end
