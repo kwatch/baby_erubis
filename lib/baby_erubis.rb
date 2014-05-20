@@ -78,31 +78,25 @@ module BabyErubis
         if sharp               # comment
           code = ("\n" * code.count("\n"))
           if ! ch && lspace && rspace   # trimmed statement
-            src << _t("#{spc}#{text}") << code << rspace
+            add_text(src, "#{spc}#{text}"); add_stmt(src, "#{code}#{rspace}")
             rspace = ""
           else                          # other statement or expression
-            src << _t("#{spc}#{text}#{lspace}") << code
+            add_text(src, "#{spc}#{text}#{lspace}"); add_stmt(src, code)
           end
         elsif ! ch             # statement
           if lspace && rspace
-            src << _t("#{spc}#{text}") << "#{lspace} #{code};#{rspace}"
+            add_text(src, "#{spc}#{text}"); add_stmt(src, "#{lspace} #{code};#{rspace}")
             rspace = ""
           else
-            src << _t("#{spc}#{text}#{lspace}") << " #{code};"
+            add_text(src, "#{spc}#{text}#{lspace}"); add_stmt(src, " #{code};")
           end
         else                   # expression
-          if ch == '='           # expression (escaping)
-            src << _t("#{spc}#{text}#{lspace}") << " _buf << #{escaped_expr(code)};"
-          elsif ch == '=='       # expression (without escaping)
-            src << _t("#{spc}#{text}#{lspace}") << " _buf << (#{code}).to_s;"
-          else
-            raise "** unreachable: ch=#{ch.inspect}"
-          end
+          add_text(src, "#{spc}#{text}#{lspace}"); add_expr(src, code, ch)
         end
         spc = rspace
       end
       text = pos == 0 ? input : input[pos..-1]   # or $' || input
-      src << _t("#{spc}#{text}")
+      add_text(src, "#{spc}#{text}")
       src << " _buf.to_s\n"    # postamble
       return src
     end
