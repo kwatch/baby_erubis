@@ -68,7 +68,8 @@ module BabyErubis
     end
 
     def parse(input)
-      src = "_buf = '';"       # preamble
+      src = ""
+      add_preamble(src)        # preamble
       spc = ""
       pos = 0
       input.scan(pattern()) do |lspace, sharp, ch, code, rspace|
@@ -97,7 +98,7 @@ module BabyErubis
       end
       text = pos == 0 ? input : input[pos..-1]   # or $' || input
       add_text(src, "#{spc}#{text}")
-      src << " _buf.to_s\n"    # postamble
+      add_postamble(src)       # postamble
       return src
     end
 
