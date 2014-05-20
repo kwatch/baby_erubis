@@ -68,42 +68,37 @@ module BabyErubis
     end
 
     def parse(input)
-      src = "_buf = '';"       # preamble
+      src = ""
+      add_preamble(src)            # preamble
       spc = ""
       pos = 0
       input.scan(pattern()) do |lspace, sharp, ch, code, rspace|
         match = Regexp.last_match
         text  = input[pos, match.begin(0) - pos]
         pos   = match.end(0)
-        if sharp               # comment
+        if sharp                   # comment
           code = ("\n" * code.count("\n"))
           if ! ch && lspace && rspace   # trimmed statement
-            src << _t("#{spc}#{text}") << code << rspace
+            add_text(src, "#{spc}#{text}"); add_stmt(src, "#{code}#{rspace}")
             rspace = ""
           else                          # other statement or expression
-            src << _t("#{spc}#{text}#{lspace}") << code
+            add_text(src, "#{spc}#{text}#{lspace}"); add_stmt(src, code)
           end
-        elsif ! ch             # statement
-          if lspace && rspace
-            src << _t("#{spc}#{text}") << "#{lspace} #{code};#{rspace}"
+        else
+          if ch                    # expression
+            add_text(src, "#{spc}#{text}#{lspace}"); add_expr(src, code, ch)
+          elsif lspace && rspace   # statement (trimming)
+            add_text(src, "#{spc}#{text}"); add_stmt(src, "#{lspace} #{code};#{rspace}")
             rspace = ""
-          else
-            src << _t("#{spc}#{text}#{lspace}") << " #{code};"
-          end
-        else                   # expression
-          if ch == '='           # expression (escaping)
-            src << _t("#{spc}#{text}#{lspace}") << " _buf << #{escaped_expr(code)};"
-          elsif ch == '=='       # expression (without escaping)
-            src << _t("#{spc}#{text}#{lspace}") << " _buf << (#{code}).to_s;"
-          else
-            raise "** unreachable: ch=#{ch.inspect}"
+          else                     # statement (without trimming)
+            add_text(src, "#{spc}#{text}#{lspace}"); add_stmt(src, " #{code};")
           end
         end
         spc = rspace
       end
       text = pos == 0 ? input : input[pos..-1]   # or $' || input
-      src << _t("#{spc}#{text}")
-      src << " _buf.to_s\n"    # postamble
+      add_text(src, "#{spc}#{text}")
+      add_postamble(src)           # postamble
       return src
     end
 
@@ -118,23 +113,40 @@ module BabyErubis
 
     protected
 
+    def add_preamble(src)
+      src << "_buf = '';"
+    end
+
+    def add_postamble(src)
+      src << " _buf.to_s\n"
+    end
+
+    def add_text(src, text)
+      return if !text || text.empty?
+      freeze = @freeze ? '.freeze' : ''
+      text.gsub!(/['\\]/, '\\\\\&')
+      src << " _buf << '#{text}'#{freeze};"
+    end
+
+    def add_stmt(src, stmt)
+      return if !stmt || stmt.empty?
+      src << stmt
+    end
+
+    def add_expr(src, expr, indicator)
+      return if !expr || expr.empty?
+      if indicator == '='           # escaping
+        src << " _buf << #{escaped_expr(expr)};"
+      else                          # without escaping
+        src << " _buf << (#{expr}).to_s;"
+      end
+    end
+
     def escaped_expr(code)
       return "(#{code}).to_s"
     end
 
     private
-
-    def build_text(text)
-      freeze = @freeze ? '.freeze' : ''
-      return text && !text.empty? ? " _buf << '#{escape_text(text)}'#{freeze};" : ''
-      #return text && !text.empty? ? " _buf << %q`#{escape_text(text)}`#{freeze};" : ''
-    end
-    alias _t build_text
-
-    def escape_text(text)
-      return text.gsub!(/['\\]/, '\\\\\&') || text
-      #return text.gsub!(/[`\\]/, '\\\\\&') || text
-    end
 
     def empty_binding
       return binding()

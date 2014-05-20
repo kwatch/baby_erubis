@@ -245,10 +245,9 @@ module BabyErubis
 
   module HideTextEnhander
 
-    def build_text(text)
-      return text.to_s.gsub(/^.*\n/, "\n").gsub(/./, ' ')
+    def add_text(src, text)
+      src << text.to_s.gsub(/^.*\n/, "\n").gsub(/./, ' ')
     end
-    alias _t build_text
 
   end
 
