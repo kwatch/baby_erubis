@@ -112,6 +112,14 @@ module BabyErubis
 
     protected
 
+    def add_preamble(src)
+      src << "_buf = '';"
+    end
+
+    def add_postamble(src)
+      src << " _buf.to_s\n"
+    end
+
     def add_text(src, text)
       return if !text || text.empty?
       freeze = @freeze ? '.freeze' : ''
