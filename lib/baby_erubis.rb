@@ -118,6 +118,20 @@ module BabyErubis
 
     protected
 
+    def add_stmt(src, stmt)
+      return if !stmt || stmt.empty?
+      src << stmt
+    end
+
+    def add_expr(src, expr, indicator)
+      return if !expr || expr.empty?
+      if indicator == '='           # escaping
+        src << " _buf << #{escaped_expr(expr)};"
+      else                          # without escaping
+        src << " _buf << (#{expr}).to_s;"
+      end
+    end
+
     def escaped_expr(code)
       return "(#{code}).to_s"
     end
