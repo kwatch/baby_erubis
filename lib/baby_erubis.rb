@@ -69,14 +69,14 @@ module BabyErubis
 
     def parse(input)
       src = ""
-      add_preamble(src)        # preamble
+      add_preamble(src)            # preamble
       spc = ""
       pos = 0
       input.scan(pattern()) do |lspace, sharp, ch, code, rspace|
         match = Regexp.last_match
         text  = input[pos, match.begin(0) - pos]
         pos   = match.end(0)
-        if sharp               # comment
+        if sharp                   # comment
           code = ("\n" * code.count("\n"))
           if ! ch && lspace && rspace   # trimmed statement
             add_text(src, "#{spc}#{text}"); add_stmt(src, "#{code}#{rspace}")
@@ -84,21 +84,21 @@ module BabyErubis
           else                          # other statement or expression
             add_text(src, "#{spc}#{text}#{lspace}"); add_stmt(src, code)
           end
-        elsif ! ch             # statement
-          if lspace && rspace
+        else
+          if ch                    # expression
+            add_text(src, "#{spc}#{text}#{lspace}"); add_expr(src, code, ch)
+          elsif lspace && rspace   # statement (trimming)
             add_text(src, "#{spc}#{text}"); add_stmt(src, "#{lspace} #{code};#{rspace}")
             rspace = ""
-          else
+          else                     # statement (without trimming)
             add_text(src, "#{spc}#{text}#{lspace}"); add_stmt(src, " #{code};")
           end
-        else                   # expression
-          add_text(src, "#{spc}#{text}#{lspace}"); add_expr(src, code, ch)
         end
         spc = rspace
       end
       text = pos == 0 ? input : input[pos..-1]   # or $' || input
       add_text(src, "#{spc}#{text}")
-      add_postamble(src)       # postamble
+      add_postamble(src)           # postamble
       return src
     end
 
