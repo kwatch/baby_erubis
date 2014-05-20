@@ -118,6 +118,13 @@ module BabyErubis
 
     protected
 
+    def add_text(src, text)
+      return if !text || text.empty?
+      freeze = @freeze ? '.freeze' : ''
+      text.gsub!(/['\\]/, '\\\\\&')
+      src << " _buf << '#{text}'#{freeze};"
+    end
+
     def add_stmt(src, stmt)
       return if !stmt || stmt.empty?
       src << stmt
@@ -137,18 +144,6 @@ module BabyErubis
     end
 
     private
-
-    def build_text(text)
-      freeze = @freeze ? '.freeze' : ''
-      return text && !text.empty? ? " _buf << '#{escape_text(text)}'#{freeze};" : ''
-      #return text && !text.empty? ? " _buf << %q`#{escape_text(text)}`#{freeze};" : ''
-    end
-    alias _t build_text
-
-    def escape_text(text)
-      return text.gsub!(/['\\]/, '\\\\\&') || text
-      #return text.gsub!(/[`\\]/, '\\\\\&') || text
-    end
 
     def empty_binding
       return binding()
