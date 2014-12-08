@@ -204,6 +204,42 @@ END
       assert_equal expected, template.parse(input)
     end
 
+    it "can recognize block argument in embedded expression correctly." do
+      input = <<'END'
+<%= form_for(:article) do |f| %>
+  ...
+<% end %>
+END
+      expected = <<'END'
+_buf = ''; _buf << form_for(:article) do |f| _buf << '
+  ...
+'; end;
+ _buf.to_s
+END
+      template = BabyErubis::Text.new(:freeze=>false)
+      assert_equal expected, template.parse(input)
+      #
+      input = <<'END'
+<%= form_for :article do %>
+  ...
+<% end %>
+END
+      expected = <<'END'
+_buf = ''; _buf << form_for :article do _buf << '
+  ...
+'; end;
+ _buf.to_s
+END
+      template = BabyErubis::Text.new(:freeze=>false)
+      assert_equal expected, template.parse(input)
+    end
+
+    it "doesn't misunderstand <%= @todo %> as block" do
+      tmpl = BabyErubis::Text.new
+      src = tmpl.parse("<b><%= @todo %></b>")
+      assert_match /\ _buf << \(\@todo\)\.to_s;/, src
+    end
+
   end
 
 
