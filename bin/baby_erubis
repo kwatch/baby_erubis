@@ -329,8 +329,8 @@ class Main
     parser.option("-c context      : context string (yaml inline style or ruby code)")
     parser.option("-f file         : context data file (*.yaml, *.json, or *.rb)")
     parser.option("-H              : same as --format=html")
-    parser.option("    --format={text|html}  : format (default: text)")\
-      .validation {|arg| "'text' or 'html' expected" if arg !~ /\A(text|html)\z/ }
+    parser.option("    --format={text|html|rails}  : format (default: text)")\
+      .validation {|arg| "'text', 'html' or 'rails' expected" if arg !~ /\A(text|html|rails)\z/ }
     parser.option("    --encoding=name       : encoding (default: utf-8)")
     parser.option("    --freeze={true|false} : use String#freeze() or not")\
       .validation {|arg| "'true' or 'false' expected" if arg !~ /\A(true|false)\z/ }
@@ -364,6 +364,7 @@ END
     when nil   ;  return BabyErubis::Text
     when 'text';  return BabyErubis::Text
     when 'html';  return BabyErubis::Html
+    when 'rails'; require 'baby_erubis/rails'; return BabyErubis::RailsTemplate
     else
       raise "** unreachable: format=#{format.inspect}"
     end
