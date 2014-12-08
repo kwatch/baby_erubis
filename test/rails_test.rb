@@ -77,6 +77,29 @@ END
       assert_equal expected, tmpl.src
     end
 
+    it "can understand block such as <%= form_for do |x| %>." do
+      s = <<-'END'
+      <%= (1..3).each do %>
+        Hello
+      <% end %>
+      END
+      tmpl = BabyErubis::RailsTemplate.new.from_str(s)
+      assert_match /\@output_buffer.append= \(1\.\.3\)\.each do ;/, tmpl.src
+      #
+      s = <<-'END'
+      <%= (1..3).each do |x, y|%>
+        Hello
+      <% end %>
+      END
+      tmpl = BabyErubis::RailsTemplate.new.from_str(s)
+      assert_match /\@output_buffer.append= \(1\.\.3\)\.each do \|x, y\| ;/, tmpl.src
+    end
+
+    it "doesn't misunderstand <%= @todo %> as block" do
+      tmpl = BabyErubis::RailsTemplate.new.from_str("<b><%= @todo %></b>")
+      assert_match /\@output_buffer\.append=\(\@todo\);/, tmpl.src
+    end
+
   end
 
 
