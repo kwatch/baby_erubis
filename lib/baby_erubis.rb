@@ -135,7 +135,9 @@ module BabyErubis
 
     def add_expr(src, expr, indicator)
       return if !expr || expr.empty?
-      if indicator == '='           # escaping
+      if expr_has_block(expr)
+        src << " _buf << #{expr}"
+      elsif indicator == '='        # escaping
         src << " _buf << #{escaped_expr(expr)};"
       else                          # without escaping
         src << " _buf << (#{expr}).to_s;"
@@ -144,6 +146,10 @@ module BabyErubis
 
     def escaped_expr(code)
       return "(#{code}).to_s"
+    end
+
+    def expr_has_block(expr)
+      return expr =~ /(\bdo|\{)\s*(\|[^|]*?\|\s*)?\z/
     end
 
     private
