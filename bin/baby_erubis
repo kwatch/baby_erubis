@@ -283,7 +283,7 @@ class Main
       return
     end
     #
-    format = options['format'] || (options['H'] && 'html')
+    format = options['format'] || (options['H'] && 'html') || (options['R'] && 'rails')
     klass  = handle_format(format)
     if options['X']
       klass = Class.new(klass)
@@ -330,6 +330,7 @@ class Main
     parser.option("-c context      : context string (yaml inline style or ruby code)")
     parser.option("-f file         : context data file (*.yaml, *.json, or *.rb)")
     parser.option("-H              : same as --format=html")
+    parser.option("-R              : same as --format=rails")
     parser.option("    --format={text|html|rails}  : format (default: text)")\
       .validation {|arg| "'text', 'html' or 'rails' expected" if arg !~ /\A(text|html|rails)\z/ }
     parser.option("    --encoding=name       : encoding (default: utf-8)")
