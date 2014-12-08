@@ -342,7 +342,7 @@ class Main
 
   def build_help_message(parser)
     s = "Usage: #{@cmdname} [..options..] [erubyfile]\n"
-    s << parser.help_message(30)
+    s << parser.help_message(28)
     s << "\n"
     s << <<"END"
 Example:

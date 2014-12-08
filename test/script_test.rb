@@ -71,20 +71,20 @@ describe Main do
 
   help_message = <<'END'.gsub(/\$SCRIPT/, File.basename($0))
 Usage: $SCRIPT [..options..] [erubyfile]
-  -h, --help                  : help
-  -v, --version               : version
-  -x                          : show ruby code
-  -X                          : show ruby code only (no text part)
-  -N                          : numbering: add line numbers   (for '-x/-X')
-  -U                          : unique: compress empty lines  (for '-x/-X')
-  -C                          : compact: remove empty lines   (for '-x/-X')
-  -c context                  : context string (yaml inline style or ruby code)
-  -f file                     : context data file (*.yaml, *.json, or *.rb)
-  -H                          : same as --format=html
-  -R                          : same as --format=rails
-      --format=format         : 'text', 'html' or 'rails' (default: text)
-      --encoding=name         : encoding (default: utf-8)
-      --freeze={true|false}   : use String#freeze() or not
+  -h, --help                : help
+  -v, --version             : version
+  -x                        : show ruby code
+  -X                        : show ruby code only (no text part)
+  -N                        : numbering: add line numbers   (for '-x/-X')
+  -U                        : unique: compress empty lines  (for '-x/-X')
+  -C                        : compact: remove empty lines   (for '-x/-X')
+  -c context                : context string (yaml inline style or ruby code)
+  -f file                   : context data file (*.yaml, *.json, or *.rb)
+  -H                        : same as --format=html
+  -R                        : same as --format=rails
+      --format=format       : 'text', 'html' or 'rails' (default: text)
+      --encoding=name       : encoding (default: utf-8)
+      --freeze={true|false} : use String#freeze() or not
 
 Example:
   ## convert eRuby file into Ruby code
