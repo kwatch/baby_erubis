@@ -191,6 +191,10 @@ Result:
     @output_buffer.safe_append='</div>
     ';@output_buffer.to_s
 
+You can check syntax of Rails template in command-line:
+
+    $ baby_erubis -Rx app/views/articles/index.html.erb | ruby -wc
+
 
 (TODO: How to use BabyErubis in Ruby on Rails instead of Erubis)
 
