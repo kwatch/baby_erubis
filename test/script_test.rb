@@ -147,6 +147,22 @@ _buf = ''; _buf << '<html>
 </html>
 '; _buf.to_s
 END
+  SOURCE_RAILS = <<'END'
+@output_buffer = output_buffer || ActionView::OutputBuffer.new;@output_buffer.safe_append='<html>
+  <body>
+    <h1>';@output_buffer.append=(@title);@output_buffer.safe_append='</h1>
+    <h1>';@output_buffer.safe_append=(@title);@output_buffer.safe_append='</h1>
+    <div>
+      <ul>
+';         for item in @items;
+@output_buffer.safe_append='        <li>';@output_buffer.append=(item);@output_buffer.safe_append='</li>
+';         end;
+@output_buffer.safe_append='      </ul>
+    </div>
+  </body>
+</html>
+';@output_buffer.to_s
+END
   SOURCE_NO_TEXT = <<'END'
 _buf = '';
 
@@ -346,6 +362,19 @@ END
   end
 
 
+  describe '-R' do
+
+    it "uses Rails-style template." do
+      sout, serr = with_erubyfile do |fname|
+        dummy_stdio { Main.main(['-Rx', fname]) }
+      end
+      assert_equal _modify(SOURCE_RAILS), sout
+      assert_equal "", serr
+    end
+
+  end
+
+
   describe '-c cotnext' do
 
     it "can specify context data in YAML format." do
@@ -502,7 +531,7 @@ END
   end
 
 
-  describe '--format={text|html}' do
+  describe '--format={text|html|rails}' do
 
     it "can enforce text format." do
       ctx_str = "{title: Love&Peace, items: [A, B, C]}"
@@ -519,6 +548,14 @@ END
         dummy_stdio { Main.main(['--format=html', '-c', ctx_str, fname]) }
       end
       assert_equal OUTPUT_HTML, sout
+      assert_equal "", serr
+    end
+
+    it "can enforce rails format." do
+      sout, serr = with_erubyfile do |fname|
+        dummy_stdio { Main.main(['--format=rails', '-x', fname]) }
+      end
+      assert_equal _modify(SOURCE_RAILS), sout
       assert_equal "", serr
     end
 
