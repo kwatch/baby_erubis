@@ -331,7 +331,7 @@ class Main
     parser.option("-f file         : context data file (*.yaml, *.json, or *.rb)")
     parser.option("-H              : same as --format=html")
     parser.option("-R              : same as --format=rails")
-    parser.option("    --format={text|html|rails}  : format (default: text)")\
+    parser.option("    --format=format  : 'text', 'html' or 'rails' (default: text)")\
       .validation {|arg| "'text', 'html' or 'rails' expected" if arg !~ /\A(text|html|rails)\z/ }
     parser.option("    --encoding=name       : encoding (default: utf-8)")
     parser.option("    --freeze={true|false} : use String#freeze() or not")\

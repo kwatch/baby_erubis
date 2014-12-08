@@ -82,7 +82,7 @@ Usage: $SCRIPT [..options..] [erubyfile]
   -f file                     : context data file (*.yaml, *.json, or *.rb)
   -H                          : same as --format=html
   -R                          : same as --format=rails
-      --format={text|html|rails}: format (default: text)
+      --format=format         : 'text', 'html' or 'rails' (default: text)
       --encoding=name         : encoding (default: utf-8)
       --freeze={true|false}   : use String#freeze() or not
 
