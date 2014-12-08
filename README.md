@@ -9,6 +9,7 @@ BabyErubis is an yet another eRuby implementation, based on Erubis.
 * Easy to customize
 * Supports HTML as well as plain text
 * Accepts both template file and template string
+* Supports Ruby on Rails template
 
 BabyErubis supports Ruby >= 1.8 and Rubinius >= 2.0.
 
@@ -76,6 +77,19 @@ Expression in `<%= ... %>` is escaped according to template class.
 
 (Experimental) `<%- ... -%>` and `<%-= ... -%>` are handled same as
 `<% ... %>` and `<%= ... %>` respectively.
+
+(Experimental) Block argument expression supported since version 2.0.
+Example:
+
+    ## template
+    <%== form_for(:article) do |f| %>
+      ...
+    <% end %>
+
+    ## compiled ruby code
+     _buf << form_for(:article) do |f| _buf << '
+      ...
+    '; end;
 
 
 
@@ -149,6 +163,36 @@ And you can control whether to use freeze() or not.
     # <b>'.freeze; _buf << (message).to_s; _buf << '</b>
     # </div>
     # '.freeze; _buf.to_s
+
+
+Ruby on Rails Template
+----------------------
+
+`BabyErubis::RailsTemplate` class generates Rails-style ruby code.
+
+    require 'baby_erubis'
+    require 'baby_erubis/rails'
+    
+    t = BabyErubis::RailsTemplate.new.from_str <<'END'
+    <div>
+      <%= form_for :article do |f| %>
+        ...
+      <% end %>
+    </div>
+    END
+    print t.src
+
+Result:
+
+    @output_buffer = output_buffer || ActionView::OutputBuffer.new;@output_buffer.safe_append='<div>
+      ';@output_buffer.append= form_for :article do |f| ;@output_buffer.safe_append='
+        ...
+    '.freeze;   end;
+    @output_buffer.safe_append='</div>
+    ';@output_buffer.to_s
+
+
+(TODO: How to use BabyErubis in Ruby on Rails instead of Erubis)
 
 
 
@@ -313,7 +357,7 @@ Sample code:
 Todo
 ====
 
-* Support Rails syntax (= `<%= form_for do |f| %>`)
+* [Done] Support Rails syntax (= `<%= form_for do |f| %>`)
 
 
 
