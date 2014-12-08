@@ -369,6 +369,14 @@ Changes
 =======
 
 
+Release 2.0.0 (2014-12-09)
+--------------------------
+
+* [enhance] Ruby on Rails template support
+* [enhance] Block argument expression support
+* [enhance] New command-line option '-R' and '--format=rails'
+
+
 Release 1.0.0 (2014-05-17)
 --------------------------
 
