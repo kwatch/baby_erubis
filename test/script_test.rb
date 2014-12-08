@@ -71,19 +71,20 @@ describe Main do
 
   help_message = <<'END'.gsub(/\$SCRIPT/, File.basename($0))
 Usage: $SCRIPT [..options..] [erubyfile]
-  -h, --help                  : help
-  -v, --version               : version
-  -x                          : show ruby code
-  -X                          : show ruby code only (no text part)
-  -N                          : numbering: add line numbers   (for '-x/-X')
-  -U                          : unique: compress empty lines  (for '-x/-X')
-  -C                          : compact: remove empty lines   (for '-x/-X')
-  -c context                  : context string (yaml inline style or ruby code)
-  -f file                     : context data file (*.yaml, *.json, or *.rb)
-  -H                          : same as --format=html
-      --format={text|html}    : format (default: text)
-      --encoding=name         : encoding (default: utf-8)
-      --freeze={true|false}   : use String#freeze() or not
+  -h, --help                : help
+  -v, --version             : version
+  -x                        : show ruby code
+  -X                        : show ruby code only (no text part)
+  -N                        : numbering: add line numbers   (for '-x/-X')
+  -U                        : unique: compress empty lines  (for '-x/-X')
+  -C                        : compact: remove empty lines   (for '-x/-X')
+  -c context                : context string (yaml inline style or ruby code)
+  -f file                   : context data file (*.yaml, *.json, or *.rb)
+  -H                        : same as --format=html
+  -R                        : same as --format=rails
+      --format=format       : 'text', 'html' or 'rails' (default: text)
+      --encoding=name       : encoding (default: utf-8)
+      --freeze={true|false} : use String#freeze() or not
 
 Example:
   ## convert eRuby file into Ruby code
@@ -145,6 +146,22 @@ _buf = ''; _buf << '<html>
   </body>
 </html>
 '; _buf.to_s
+END
+  SOURCE_RAILS = <<'END'
+@output_buffer = output_buffer || ActionView::OutputBuffer.new;@output_buffer.safe_append='<html>
+  <body>
+    <h1>';@output_buffer.append=(@title);@output_buffer.safe_append='</h1>
+    <h1>';@output_buffer.safe_append=(@title);@output_buffer.safe_append='</h1>
+    <div>
+      <ul>
+';         for item in @items;
+@output_buffer.safe_append='        <li>';@output_buffer.append=(item);@output_buffer.safe_append='</li>
+';         end;
+@output_buffer.safe_append='      </ul>
+    </div>
+  </body>
+</html>
+';@output_buffer.to_s
 END
   SOURCE_NO_TEXT = <<'END'
 _buf = '';
@@ -345,6 +362,19 @@ END
   end
 
 
+  describe '-R' do
+
+    it "uses Rails-style template." do
+      sout, serr = with_erubyfile do |fname|
+        dummy_stdio { Main.main(['-Rx', fname]) }
+      end
+      assert_equal _modify(SOURCE_RAILS), sout
+      assert_equal "", serr
+    end
+
+  end
+
+
   describe '-c cotnext' do
 
     it "can specify context data in YAML format." do
@@ -501,7 +531,7 @@ END
   end
 
 
-  describe '--format={text|html}' do
+  describe '--format={text|html|rails}' do
 
     it "can enforce text format." do
       ctx_str = "{title: Love&Peace, items: [A, B, C]}"
@@ -521,6 +551,14 @@ END
       assert_equal "", serr
     end
 
+    it "can enforce rails format." do
+      sout, serr = with_erubyfile do |fname|
+        dummy_stdio { Main.main(['--format=rails', '-x', fname]) }
+      end
+      assert_equal _modify(SOURCE_RAILS), sout
+      assert_equal "", serr
+    end
+
     it "reports error when argument is missng." do
       status = nil
       sout, serr = with_erubyfile do |fname|
@@ -537,7 +575,7 @@ END
         dummy_stdio { status = Main.main(['-x', '--format=json', fname]) }
       end
       assert_equal "", sout
-      assert_equal "#{File.basename($0)}: --format=json: 'text' or 'html' expected\n", serr
+      assert_equal "#{File.basename($0)}: --format=json: 'text', 'html' or 'rails' expected\n", serr
       assert_equal 1, status
     end
 
