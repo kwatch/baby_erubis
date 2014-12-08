@@ -283,7 +283,8 @@ class Main
       return
     end
     #
-    klass  = handle_format(options['format'] || (options['H'] ? 'html' : nil))
+    format = options['format'] || (options['H'] && 'html')
+    klass  = handle_format(format)
     if options['X']
       klass = Class.new(klass)
       klass.class_eval { include BabyErubis::HideTextEnhander }
