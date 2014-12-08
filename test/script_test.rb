@@ -81,7 +81,8 @@ Usage: $SCRIPT [..options..] [erubyfile]
   -c context                  : context string (yaml inline style or ruby code)
   -f file                     : context data file (*.yaml, *.json, or *.rb)
   -H                          : same as --format=html
-      --format={text|html}    : format (default: text)
+  -R                          : same as --format=rails
+      --format={text|html|rails}: format (default: text)
       --encoding=name         : encoding (default: utf-8)
       --freeze={true|false}   : use String#freeze() or not
 
@@ -537,7 +538,7 @@ END
         dummy_stdio { status = Main.main(['-x', '--format=json', fname]) }
       end
       assert_equal "", sout
-      assert_equal "#{File.basename($0)}: --format=json: 'text' or 'html' expected\n", serr
+      assert_equal "#{File.basename($0)}: --format=json: 'text', 'html' or 'rails' expected\n", serr
       assert_equal 1, status
     end
 
