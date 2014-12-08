@@ -2,7 +2,7 @@
 
 ###
 
-RELEASE   = ENV['rel'] || '0.0.0'
+RELEASE   = ENV['rel'] || '2.0.0'
 COPYRIGHT = 'copyright(c) 2014 kuwata-lab.com all rights reserved'
 LICENSE   = 'MIT License'
 
