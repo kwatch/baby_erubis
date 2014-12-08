@@ -14,6 +14,7 @@ Gem::Specification.new do |s|
   s.author      = "makoto kuwata"
   s.email       = "kwa(at)kuwata-lab.com"
   s.version     = "$Release: 0.0.0 $".split()[1]
+  s.license     = "MIT License"
   s.platform    = Gem::Platform::RUBY
   s.homepage    = "https://github.com/kwatch/BabyErubis/tree/ruby"
   s.summary     = "yet another eRuby implementation based on Erubis"
