@@ -108,10 +108,10 @@ END
 _buf = '';
 
 
- _buf << 'x = '.freeze;
+ _buf << 'x = ';
 
  _buf << '
-'.freeze;
+';
 
 
  _buf.to_s
