@@ -45,8 +45,7 @@ module BabyErubis
         c = self.class
         dir   = c.const_get :ERUBY_TEMPLATE_DIR
         ext   = c.const_get :ERUBY_TEMPLATE_HTML_EXT
-        cache = c.const_get :ERUBY_TEMPLATE_CACHE
-        _eruby_find_template("#{dir}/#{tmpl_name}#{ext}", cache) {|fpath|
+        _eruby_find_template("#{dir}/#{tmpl_name}#{ext}") {|fpath|
           BabyErubis::Html.new.from_file(fpath, encoding)
         }
       }
@@ -57,8 +56,7 @@ module BabyErubis
         c = self.class
         dir   = c.const_get :ERUBY_TEMPLATE_DIR
         ext   = c.const_get :ERUBY_TEMPLATE_TEXT_EXT
-        cache = c.const_get :ERUBY_TEMPLATE_CACHE
-        _eruby_find_template("#{dir}/#{tmpl_name}#{ext}", cache) {|fpath|
+        _eruby_find_template("#{dir}/#{tmpl_name}#{ext}") {|fpath|
           BabyErubis::Text.new.from_file(fpath, encoding)
         }
       }
@@ -66,9 +64,10 @@ module BabyErubis
 
     private
 
-    def _eruby_find_template(fpath, cache)
+    def _eruby_find_template(fpath)
+      cache = self.class.const_get :ERUBY_TEMPLATE_CACHE
       now = Time.now
-      template = _eruby_load_template(fpath, cache, now)
+      template = _eruby_load_template(cache, fpath, now)
       unless template
         mtime = File.mtime(fpath)
         template = yield fpath
@@ -79,12 +78,12 @@ module BabyErubis
           mtime == File.mtime(fpath)  or
             raise "#{fpath}: timestamp changes too frequently. something wrong."
         end
-        _eruby_store_template(fpath, cache, template, mtime, now)
+        _eruby_store_template(cache, fpath, template, mtime, now)
       end
       return template
     end
 
-    def _eruby_load_template(fpath, cache, now)
+    def _eruby_load_template(cache, fpath, now)
       tuple = cache[fpath]
       template, timestamp, last_checked = tuple
       return nil unless template
@@ -104,7 +103,7 @@ module BabyErubis
       end
     end
 
-    def _eruby_store_template(fpath, cache, template, timestamp, last_checked)
+    def _eruby_store_template(cache, fpath, template, timestamp, last_checked)
       cache[fpath] = [template, timestamp, last_checked]
     end
 

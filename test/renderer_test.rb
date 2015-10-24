@@ -258,7 +258,7 @@ END
       assert count == 1000, "#{count} == 1000: failed"
       #
       assert cache[fpath] != nil
-      ret = obj.__send__(:_eruby_load_template, fpath, cache, Time.now)
+      ret = obj.__send__(:_eruby_load_template, cache, fpath, Time.now)
       assert_nil ret
       assert_nil cache[fpath]
     end
