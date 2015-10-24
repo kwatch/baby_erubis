@@ -156,13 +156,17 @@ END
       cache.clear()
       assert_equal 0, cache.length
       obj = HelloClass.new(:items=>[10, 20, 30])
+      t1 = Time.now
       obj.eruby_render_html(:'welcome')
+      t2 = Time.now
       assert_equal 2, cache.length
       tuple = cache['_t/welcome.html.erb']
       assert tuple.is_a?(Array)
-      assert_equal 2, tuple.length
+      assert_equal 3, tuple.length
       assert_equal BabyErubis::HtmlTemplate, tuple[0].class
       assert_equal File.mtime('_t/welcome.html.erb'), tuple[1]
+      assert t1 < tuple[2]
+      assert t2 > tuple[2]
     end
 
     it "caches template object with timestamp." do
@@ -176,6 +180,7 @@ END
       #
       tstamp = Time.now - 30
       File.utime(tstamp, tstamp, '_t/welcome.html.erb')
+      sleep(1.0)
       obj.eruby_render_html(:'welcome')
       tuple2 = cache['_t/welcome.html.erb']
       templ2 = tuple2[0]
@@ -184,6 +189,60 @@ END
       assert mtime1 != mtime2
       assert templ2.is_a?(BabyErubis::HtmlTemplate)
       assert_equal tstamp.to_s, mtime2.to_s
+    end
+
+  end
+
+
+  describe '#_eruby_load_template()' do
+
+    _prepare = proc {
+      cache = HelloClass.const_get :ERUBY_TEMPLATE_CACHE
+      cache.clear()
+      obj = HelloClass.new(:items=>[10, 20, 30])
+      obj.eruby_render_html(:'welcome')
+      fpath = '_t/welcome.html.erb'
+      ts = Time.now - 30
+      File.utime(ts, ts, fpath)
+      [cache, obj, fpath]
+    }
+
+    _render = proc {|cache, obj, fpath, n, expected|
+      count = 0
+      n.times do
+        obj.eruby_render_html(:'welcome')
+        if expected != cache[fpath]
+          count += 1
+          cache[fpath] = expected
+        end
+      end
+      count
+    }
+
+    it "skips timestamp check in order to reduce syscall (= File.mtime())" do
+      cache, obj, fpath = _prepare.call()
+      #
+      sleep(0.1)
+      count = _render.call(cache, obj, fpath, 1000, cache[fpath])
+      assert count == 0, "#{count} == 0: failed"
+    end
+
+    it "checks timestamp only for 5% request in order to avoid thundering herd" do
+      cache, obj, fpath = _prepare.call()
+      #
+      sleep(0.6)
+      count = _render.call(cache, obj, fpath, 1000, cache[fpath])
+      assert count > 0,    "#{count} > 0: failed"
+      assert count > 3,    "#{count} > 3: failed"
+      assert count < 100,  "#{count} < 100: failed"
+    end
+
+    it "returns nil when file timestamp is changed" do
+      cache, obj, fpath = _prepare.call()
+      #
+      sleep(1.1)
+      count = _render.call(cache, obj, fpath, 1000, cache[fpath])
+      assert count == 1000, "#{count} == 1000: failed"
     end
 
   end

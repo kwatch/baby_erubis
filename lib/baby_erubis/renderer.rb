@@ -67,9 +67,10 @@ module BabyErubis
     private
 
     def _eruby_find_template(fpath, cache)
-      mtime = File.mtime(fpath)
-      template, timestamp = cache[fpath]
-      if ! template || timestamp != mtime
+      now = Time.now
+      template = _eruby_load_template(fpath, cache, now)
+      unless template
+        mtime = File.mtime(fpath)
         template = yield fpath
         ## retry when file timestamp changed during template loading
         unless mtime == (mtime2 = File.mtime(fpath))
@@ -78,9 +79,25 @@ module BabyErubis
           mtime == File.mtime(fpath)  or
             raise "#{fpath}: timestamp changes too frequently. something wrong."
         end
-        cache[fpath] = [template, mtime]
+        _eruby_store_template(fpath, cache, template, mtime, now)
       end
       return template
+    end
+
+    def _eruby_load_template(fpath, cache, now)
+      template, timestamp, last_checked = cache[fpath]
+      return nil unless template
+      ## skip timestamp check in order to reduce syscall (= File.mtime())
+      interval = now - last_checked
+      return template if interval < 0.5
+      ## check timestamp only for 5% request in order to avoid thundering herd
+      return template if interval < 1.0 && rand() > 0.05
+      ## return nil when file timestamp is changed
+      return timestamp == File.mtime(fpath) ? template : nil
+    end
+
+    def _eruby_store_template(fpath, cache, template, timestamp, last_checked)
+      cache[fpath] = [template, timestamp, last_checked]
     end
 
     def _eruby_render_template(template_name, layout)
