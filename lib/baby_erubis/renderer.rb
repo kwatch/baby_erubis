@@ -36,9 +36,9 @@ module BabyErubis
 
     ERUBY_PATH         = ['.']
     ERUBY_LAYOUT       = :_layout
-    ERUBY_HTML_CLASS   = BabyErubis::Html
+    ERUBY_HTML         = BabyErubis::Html
     ERUBY_HTML_EXT     = '.html.eruby'
-    ERUBY_TEXT_CLASS   = BabyErubis::Text
+    ERUBY_TEXT         = BabyErubis::Text
     ERUBY_TEXT_EXT     = '.eruby'
     ERUBY_CACHE        = {}
 
@@ -46,7 +46,7 @@ module BabyErubis
       return _eruby_render_template(template_name, layout) {|tmpl_name|
         ext = self.class.const_get :ERUBY_HTML_EXT
         _eruby_find_template("#{tmpl_name}#{ext}") {|fpath|
-          tmpl_class = self.class.const_get :ERUBY_HTML_CLASS
+          tmpl_class = self.class.const_get :ERUBY_HTML
           tmpl_class.new.from_file(fpath, encoding)
         }
       }
@@ -56,7 +56,7 @@ module BabyErubis
       return _eruby_render_template(template_name, layout) {|tmpl_name|
         ext = self.class.const_get :ERUBY_TEXT_EXT
         _eruby_find_template("#{tmpl_name}#{ext}") {|fpath|
-          tmpl_class = self.class.const_get :ERUBY_TEXT_CLASS
+          tmpl_class = self.class.const_get :ERUBY_TEXT
           tmpl_class.new.from_file(fpath, encoding)
         }
       }
