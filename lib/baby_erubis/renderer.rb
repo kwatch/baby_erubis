@@ -43,8 +43,8 @@ module BabyErubis
     def eruby_render_html(template_name, layout: true, encoding: 'utf-8')
       return _eruby_render_template(template_name, layout) {|tmpl_name|
         c = self.class
-        dir   = c.const_get :ERUBY_TEMPLATE_DIR
-        ext   = c.const_get :ERUBY_TEMPLATE_HTML_EXT
+        dir = c.const_get :ERUBY_TEMPLATE_DIR
+        ext = c.const_get :ERUBY_TEMPLATE_HTML_EXT
         _eruby_find_template("#{dir}/#{tmpl_name}#{ext}") {|fpath|
           BabyErubis::Html.new.from_file(fpath, encoding)
         }
@@ -54,8 +54,8 @@ module BabyErubis
     def eruby_render_text(template_name, layout: false, encoding: 'utf-8')
       return _eruby_render_template(template_name, layout) {|tmpl_name|
         c = self.class
-        dir   = c.const_get :ERUBY_TEMPLATE_DIR
-        ext   = c.const_get :ERUBY_TEMPLATE_TEXT_EXT
+        dir = c.const_get :ERUBY_TEMPLATE_DIR
+        ext = c.const_get :ERUBY_TEMPLATE_TEXT_EXT
         _eruby_find_template("#{dir}/#{tmpl_name}#{ext}") {|fpath|
           BabyErubis::Text.new.from_file(fpath, encoding)
         }
