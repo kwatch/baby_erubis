@@ -85,15 +85,23 @@ module BabyErubis
     end
 
     def _eruby_load_template(fpath, cache, now)
-      template, timestamp, last_checked = cache[fpath]
+      tuple = cache[fpath]
+      template, timestamp, last_checked = tuple
       return nil unless template
       ## skip timestamp check in order to reduce syscall (= File.mtime())
       interval = now - last_checked
       return template if interval < 0.5
       ## check timestamp only for 5% request in order to avoid thundering herd
       return template if interval < 1.0 && rand() > 0.05
-      ## return nil when file timestamp is changed
-      return timestamp == File.mtime(fpath) ? template : nil
+      ## update last_checked in cache when file timestamp is not changed
+      if timestamp == File.mtime(fpath)
+        tuple[2] = now
+        return template
+      ## remove cache entry when file timestamp is changed
+      else
+        cache[fpath] = nil
+        return nil
+      end
     end
 
     def _eruby_store_template(fpath, cache, template, timestamp, last_checked)

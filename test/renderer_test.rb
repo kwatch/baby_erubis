@@ -237,12 +237,30 @@ END
       assert count < 100,  "#{count} < 100: failed"
     end
 
-    it "returns nil when file timestamp is changed" do
+    it "update last_checked in cache when file timestamp is not changed" do
+      cache, obj, fpath = _prepare.call()
+      _, _, old_last_checked = cache[fpath]
+      #
+      sleep(1.0)
+      now = Time.now
+      obj.eruby_render_html(:'welcome')
+      _, _, new_last_checked = cache[fpath]
+      assert_operator new_last_checked, :'!=', old_last_checked
+      assert_operator (new_last_checked - old_last_checked), :'>=', 1.0
+      assert_operator (new_last_checked - now), :'<', 0.001
+    end
+
+    it "remove cache entry when file timestamp is changed" do
       cache, obj, fpath = _prepare.call()
       #
-      sleep(1.1)
+      sleep(1.0)
       count = _render.call(cache, obj, fpath, 1000, cache[fpath])
       assert count == 1000, "#{count} == 1000: failed"
+      #
+      assert cache[fpath] != nil
+      ret = obj.__send__(:_eruby_load_template, fpath, cache, Time.now)
+      assert_nil ret
+      assert_nil cache[fpath]
     end
 
   end
