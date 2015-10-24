@@ -212,11 +212,13 @@ because `BabyErubis/Renderer` module defines rendering methods:
       include BabyErubis::HtmlEscaper
       include BabyErubis::Renderer          # !!!!
 
-      ERUBY_TEMPLATE_PATH      = ['.', 'templates']
-      ERUBY_TEMPLATE_LAYOUT    = :_layout
-      ERUBY_TEMPLATE_HTML_EXT  = '.html.eruby'
-      ERUBY_TEMPLATE_TEXT_EXT  = '.eruby'
-      ERUBY_TEMPLATE_CACHE     = {}
+      ERUBY_PATH      = ['.']
+      ERUBY_LAYOUT    = :_layout
+      ERUBY_HTML      = BabyErubis::Html
+      ERUBY_HTML_EXT  = '.html.eruby'
+      ERUBY_TEXT      = BabyErubis::Text
+      ERUBY_TEXT_EXT  = '.eruby'
+      ERUBY_CACHE     = {}
 
       alias render_html eruby_render_html
       alias render_text eruby_render_text
