@@ -46,8 +46,9 @@ module BabyErubis
         dir   = c.const_get :ERUBY_TEMPLATE_DIR
         ext   = c.const_get :ERUBY_TEMPLATE_HTML_EXT
         cache = c.const_get :ERUBY_TEMPLATE_CACHE
-        fpath = "#{dir}/#{tmpl_name}#{ext}"
-        cache[fpath] ||= BabyErubis::Html.new.from_file(fpath, encoding)
+        _eruby_find_template("#{dir}/#{tmpl_name}#{ext}", cache) {|fpath|
+          BabyErubis::Html.new.from_file(fpath, encoding)
+        }
       }
     end
 
@@ -57,12 +58,30 @@ module BabyErubis
         dir   = c.const_get :ERUBY_TEMPLATE_DIR
         ext   = c.const_get :ERUBY_TEMPLATE_TEXT_EXT
         cache = c.const_get :ERUBY_TEMPLATE_CACHE
-        fpath = "#{dir}/#{tmpl_name}#{ext}"
-        cache[fpath] ||= BabyErubis::Text.new.from_file(fpath, encoding)
+        _eruby_find_template("#{dir}/#{tmpl_name}#{ext}", cache) {|fpath|
+          BabyErubis::Text.new.from_file(fpath, encoding)
+        }
       }
     end
 
     private
+
+    def _eruby_find_template(fpath, cache)
+      mtime = File.mtime(fpath)
+      template, timestamp = cache[fpath]
+      if ! template || timestamp != mtime
+        template = yield fpath
+        ## retry when file timestamp changed during template loading
+        unless mtime == (mtime2 = File.mtime(fpath))
+          mtime = mtime2
+          template = yield fpath
+          mtime == File.mtime(fpath)  or
+            raise "#{fpath}: timestamp changes too frequently. something wrong."
+        end
+        cache[fpath] = [template, mtime]
+      end
+      return template
+    end
 
     def _eruby_render_template(template_name, layout)
       template = yield template_name

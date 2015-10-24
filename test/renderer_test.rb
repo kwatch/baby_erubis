@@ -149,6 +149,46 @@ END
   end
 
 
+  describe '#_eruby_find_template()' do
+
+    it "caches template object with timestamp." do
+      cache = HelloClass.const_get :ERUBY_TEMPLATE_CACHE
+      cache.clear()
+      assert_equal 0, cache.length
+      obj = HelloClass.new(:items=>[10, 20, 30])
+      obj.eruby_render_html(:'welcome')
+      assert_equal 2, cache.length
+      tuple = cache['_t/welcome.html.erb']
+      assert tuple.is_a?(Array)
+      assert_equal 2, tuple.length
+      assert_equal BabyErubis::HtmlTemplate, tuple[0].class
+      assert_equal File.mtime('_t/welcome.html.erb'), tuple[1]
+    end
+
+    it "caches template object with timestamp." do
+      cache = HelloClass.const_get :ERUBY_TEMPLATE_CACHE
+      cache.clear()
+      obj = HelloClass.new(:items=>[10, 20, 30])
+      obj.eruby_render_html(:'welcome')
+      tuple1 = cache['_t/welcome.html.erb']
+      templ1 = tuple1[0]
+      mtime1 = tuple1[1]
+      #
+      tstamp = Time.now - 30
+      File.utime(tstamp, tstamp, '_t/welcome.html.erb')
+      obj.eruby_render_html(:'welcome')
+      tuple2 = cache['_t/welcome.html.erb']
+      templ2 = tuple2[0]
+      mtime2 = tuple2[1]
+      assert templ1 != templ2
+      assert mtime1 != mtime2
+      assert templ2.is_a?(BabyErubis::HtmlTemplate)
+      assert_equal tstamp.to_s, mtime2.to_s
+    end
+
+  end
+
+
   describe '#_eruby_render_template()' do
 
     it "recognizes '@_layout' variable" do
