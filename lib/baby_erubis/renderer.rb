@@ -17,7 +17,7 @@ module BabyErubis
   ##     include BabyErubis::HtmlEscaper
   ##     include BabyErubis::Renderer
   ##
-  ##     #ERUBY_TEMPLATE_DIR       = 'templates'
+  ##     #ERUBY_TEMPLATE_PATH      = ['.', 'templates']
   ##     #ERUBY_TEMPLATE_LAYOUT    = :_layout
   ##     #ERUBY_TEMPLATE_HTML_EXT  = '.html.eruby'
   ##     #ERUBY_TEMPLATE_TEXT_EXT  = '.eruby'
@@ -34,7 +34,7 @@ module BabyErubis
   ##
   module Renderer
 
-    ERUBY_TEMPLATE_DIR       = '.'
+    ERUBY_TEMPLATE_PATH      = ['.']
     ERUBY_TEMPLATE_LAYOUT    = :_layout
     ERUBY_TEMPLATE_HTML_EXT  = '.html.eruby'
     ERUBY_TEMPLATE_TEXT_EXT  = '.eruby'
@@ -42,10 +42,8 @@ module BabyErubis
 
     def eruby_render_html(template_name, layout: true, encoding: 'utf-8')
       return _eruby_render_template(template_name, layout) {|tmpl_name|
-        c = self.class
-        dir = c.const_get :ERUBY_TEMPLATE_DIR
-        ext = c.const_get :ERUBY_TEMPLATE_HTML_EXT
-        _eruby_find_template("#{dir}/#{tmpl_name}#{ext}") {|fpath|
+        ext = self.class.const_get :ERUBY_TEMPLATE_HTML_EXT
+        _eruby_find_template("#{tmpl_name}#{ext}") {|fpath|
           BabyErubis::Html.new.from_file(fpath, encoding)
         }
       }
@@ -53,10 +51,8 @@ module BabyErubis
 
     def eruby_render_text(template_name, layout: false, encoding: 'utf-8')
       return _eruby_render_template(template_name, layout) {|tmpl_name|
-        c = self.class
-        dir = c.const_get :ERUBY_TEMPLATE_DIR
-        ext = c.const_get :ERUBY_TEMPLATE_TEXT_EXT
-        _eruby_find_template("#{dir}/#{tmpl_name}#{ext}") {|fpath|
+        ext = self.class.const_get :ERUBY_TEMPLATE_TEXT_EXT
+        _eruby_find_template("#{tmpl_name}#{ext}") {|fpath|
           BabyErubis::Text.new.from_file(fpath, encoding)
         }
       }
@@ -64,8 +60,14 @@ module BabyErubis
 
     private
 
-    def _eruby_find_template(fpath)
+    def _eruby_find_template(filename)
       cache = self.class.const_get :ERUBY_TEMPLATE_CACHE
+      paths = self.class.const_get :ERUBY_TEMPLATE_PATH
+      dir =  paths.find {|path| cache.key?("#{path}/#{filename}") } \
+          || paths.find {|path| File.file?("#{path}/#{filename}") }  or
+        raise BabyErubis::TemplateError.new("#{filename}: template not found in #{paths.inspect}.")
+      fpath = "#{dir}/#{filename}"
+      #
       now = Time.now
       template = _eruby_load_template(cache, fpath, now)
       unless template

@@ -19,7 +19,7 @@ class HelloClass
   include BabyErubis::HtmlEscaper
   include BabyErubis::Renderer
 
-  ERUBY_TEMPLATE_DIR      = '_t'
+  ERUBY_TEMPLATE_PATH     = ['_t']
   ERUBY_TEMPLATE_HTML_EXT = '.html.erb'
   ERUBY_TEMPLATE_TEXT_EXT = '.erb'
 
@@ -189,6 +189,15 @@ END
       assert mtime1 != mtime2
       assert templ2.is_a?(BabyErubis::HtmlTemplate)
       assert_equal tstamp.to_s, mtime2.to_s
+    end
+
+    it "raises BabyErubis::TempalteError when template file not found." do
+      obj = HelloClass.new(:items=>[10, 20, 30])
+      ex = assert_raises(BabyErubis::TemplateError) do
+        obj.eruby_render_html(:'hello-homhom')
+      end
+      expected = "hello-homhom.html.erb: template not found in [\"_t\"]."
+      assert_equal expected, ex.message
     end
 
   end
