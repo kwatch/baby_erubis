@@ -19,9 +19,9 @@ class HelloClass
   include BabyErubis::HtmlEscaper
   include BabyErubis::Renderer
 
-  ERUBY_TEMPLATE_PATH     = ['_t']
-  ERUBY_TEMPLATE_HTML_EXT = '.html.erb'
-  ERUBY_TEMPLATE_TEXT_EXT = '.erb'
+  ERUBY_PATH     = ['_t']
+  ERUBY_HTML_EXT = '.html.erb'
+  ERUBY_TEXT_EXT = '.erb'
 
   def initialize(vars={})
     vars.each do |k, v|
@@ -152,7 +152,7 @@ END
   describe '#_eruby_find_template()' do
 
     it "caches template object with timestamp." do
-      cache = HelloClass.const_get :ERUBY_TEMPLATE_CACHE
+      cache = HelloClass.const_get :ERUBY_CACHE
       cache.clear()
       assert_equal 0, cache.length
       obj = HelloClass.new(:items=>[10, 20, 30])
@@ -170,7 +170,7 @@ END
     end
 
     it "caches template object with timestamp." do
-      cache = HelloClass.const_get :ERUBY_TEMPLATE_CACHE
+      cache = HelloClass.const_get :ERUBY_CACHE
       cache.clear()
       obj = HelloClass.new(:items=>[10, 20, 30])
       obj.eruby_render_html(:'welcome')
@@ -206,7 +206,7 @@ END
   describe '#_eruby_load_template()' do
 
     _prepare = proc {
-      cache = HelloClass.const_get :ERUBY_TEMPLATE_CACHE
+      cache = HelloClass.const_get :ERUBY_CACHE
       cache.clear()
       obj = HelloClass.new(:items=>[10, 20, 30])
       obj.eruby_render_html(:'welcome')
