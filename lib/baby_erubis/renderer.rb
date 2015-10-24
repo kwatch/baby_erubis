@@ -34,13 +34,13 @@ module BabyErubis
   ##
   module Renderer
 
-    ERUBY_PATH      = ['.']
-    ERUBY_LAYOUT    = :_layout
-    ERUBY_HTML_CLASS = BabyErubis::Html
-    ERUBY_HTML_EXT  = '.html.eruby'
-    ERUBY_TEXT_CLASS = BabyErubis::Text
-    ERUBY_TEXT_EXT  = '.eruby'
-    ERUBY_CACHE     = {}
+    ERUBY_PATH         = ['.']
+    ERUBY_LAYOUT       = :_layout
+    ERUBY_HTML_CLASS   = BabyErubis::Html
+    ERUBY_HTML_EXT     = '.html.eruby'
+    ERUBY_TEXT_CLASS   = BabyErubis::Text
+    ERUBY_TEXT_EXT     = '.eruby'
+    ERUBY_CACHE        = {}
 
     def eruby_render_html(template_name, layout: true, encoding: 'utf-8')
       return _eruby_render_template(template_name, layout) {|tmpl_name|
