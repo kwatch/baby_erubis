@@ -17,11 +17,13 @@ module BabyErubis
   ##     include BabyErubis::HtmlEscaper
   ##     include BabyErubis::Renderer
   ##
-  ##     #ERUBY_PATH      = ['.', 'templates']
-  ##     #ERUBY_LAYOUT    = :_layout
-  ##     #ERUBY_HTML_EXT  = '.html.eruby'
-  ##     #ERUBY_TEXT_EXT  = '.eruby'
-  ##     #ERUBY_CACHE     = {}
+  ##     ERUBY_PATH      = ['.', 'templates']
+  ##     ERUBY_LAYOUT    = :_layout
+  ##     ERUBY_HTML      = BabyErubis::Html
+  ##     ERUBY_HTML_EXT  = '.html.eruby'
+  ##     ERUBY_TEXT      = BabyErubis::Text
+  ##     ERUBY_TEXT_EXT  = '.eruby'
+  ##     ERUBY_CACHE     = {}
   ##
   ##     def index
   ##       @items = ['A', 'B', 'C']
@@ -29,6 +31,7 @@ module BabyErubis
   ##       html = eruby_render_html(:welcome)
   ##       return html
   ##     end
+  ##
   ##   end
   ##
   ##
