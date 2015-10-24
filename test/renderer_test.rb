@@ -19,6 +19,10 @@ class HelloClass
   include BabyErubis::HtmlEscaper
   include BabyErubis::Renderer
 
+  ERUBY_TEMPLATE_DIR      = '_t'
+  ERUBY_TEMPLATE_HTML_EXT = '.html.erb'
+  ERUBY_TEMPLATE_TEXT_EXT = '.erb'
+
   def initialize(vars={})
     vars.each do |k, v|
       instance_variable_set("@#{k}", v)
@@ -73,10 +77,10 @@ END
 
   before do
     Dir.mkdir('_t')
-    File.open('_t/_layout.html.eruby', 'w') {|f| f.write(layout_template) }
-    File.open('_t/_layout2.html.eruby', 'w') {|f| f.write(layout2_template) }
-    File.open('_t/welcome.html.eruby', 'w') {|f| f.write(html_template) }
-    File.open('_t/example.text.eruby', 'w') {|f| f.write(text_template) }
+    File.open('_t/_layout.html.erb', 'w') {|f| f.write(layout_template) }
+    File.open('_t/_layout2.html.erb', 'w') {|f| f.write(layout2_template) }
+    File.open('_t/welcome.html.erb', 'w') {|f| f.write(html_template) }
+    File.open('_t/example.text.erb', 'w') {|f| f.write(text_template) }
   end
 
   after do
@@ -89,7 +93,7 @@ END
 
     it "renders html template." do
       obj = HelloClass.new(:items=>[10, 20, 30])
-      actual = obj.eruby_render_html(:'_t/welcome', layout: false)
+      actual = obj.eruby_render_html(:'welcome', layout: false)
       expected = <<'END'
 <h1>Example</h1>
 <ul>
@@ -103,7 +107,7 @@ END
 
     it "renders with layout template." do
       obj = HelloClass.new(:items=>[10, 20, 30])
-      actual = obj.eruby_render_html(:'_t/welcome', layout: :'_t/_layout')
+      actual = obj.eruby_render_html(:'welcome', layout: :'_layout')
       expected = <<'END'
 <!doctype>
 <html>
@@ -134,7 +138,7 @@ END
 
     it "renders text template" do
       obj = HelloClass.new(:title=>"Homhom", :date=>"2015-01-01")
-      actual = obj.eruby_render_text(:'_t/example.text', layout: false)
+      actual = obj.eruby_render_text(:'example.text', layout: false)
       expected = <<'END'
 title: Homhom
 date:  2015-01-01
@@ -172,13 +176,8 @@ END
 </html>
 END
       obj = HelloClass.new(:items=>[10,20,30])
-      File.rename '_t/_layout.html.eruby', '_layout.html.eruby'
-      begin
-        actual = obj.eruby_render_html(:'_t/welcome', layout: :'_t/_layout2')
-        assert_equal expected, actual
-      ensure
-        File.unlink '_layout.html.eruby' if File.exist?('_layout.html.eruby')
-      end
+      actual = obj.eruby_render_html(:'welcome', layout: :'_layout2')
+      assert_equal expected, actual
     end
 
   end

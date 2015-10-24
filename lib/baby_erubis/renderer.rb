@@ -42,15 +42,23 @@ module BabyErubis
 
     def eruby_render_html(template_name, layout: true, encoding: 'utf-8')
       return _eruby_render_template(template_name, layout) {|tmpl_name|
-        fpath = "#{ERUBY_TEMPLATE_DIR}/#{tmpl_name}#{ERUBY_TEMPLATE_HTML_EXT}"
-        ERUBY_TEMPLATE_CACHE[fpath] ||= BabyErubis::Html.new.from_file(fpath, encoding)
+        c = self.class
+        dir   = c.const_get :ERUBY_TEMPLATE_DIR
+        ext   = c.const_get :ERUBY_TEMPLATE_HTML_EXT
+        cache = c.const_get :ERUBY_TEMPLATE_CACHE
+        fpath = "#{dir}/#{tmpl_name}#{ext}"
+        cache[fpath] ||= BabyErubis::Html.new.from_file(fpath, encoding)
       }
     end
 
     def eruby_render_text(template_name, layout: false, encoding: 'utf-8')
       return _eruby_render_template(template_name, layout) {|tmpl_name|
-        fpath = "#{ERUBY_TEMPLATE_DIR}/#{tmpl_name}#{ERUBY_TEMPLATE_TEXT_EXT}"
-        ERUBY_TEMPLATE_CACHE[fpath] ||= BabyErubis::Text.new.from_file(fpath, encoding)
+        c = self.class
+        dir   = c.const_get :ERUBY_TEMPLATE_DIR
+        ext   = c.const_get :ERUBY_TEMPLATE_TEXT_EXT
+        cache = c.const_get :ERUBY_TEMPLATE_CACHE
+        fpath = "#{dir}/#{tmpl_name}#{ext}"
+        cache[fpath] ||= BabyErubis::Text.new.from_file(fpath, encoding)
       }
     end
 
@@ -63,7 +71,7 @@ module BabyErubis
         layout = @_layout; @_layout = nil
       end
       while layout
-        layout = ERUBY_TEMPLATE_LAYOUT if layout == true
+        layout = self.class.const_get :ERUBY_TEMPLATE_LAYOUT if layout == true
         template = yield layout
         @_content = s
         s = template.render(self)
