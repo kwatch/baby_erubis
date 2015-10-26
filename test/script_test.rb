@@ -479,6 +479,7 @@ END
         end
       end
       expected = "-f #{ctx_file}: JSON syntax error: (JSON::ParserError) 743: unexpected token\n"
+      expected = expected.sub(/743/, '814') if RUBY_VERSION >= '2.2'
       expected = expected.sub(/743/, '795') if RUBY_VERSION >= '2.0'
       assert_equal "", sout
       assert_equal expected, serr
