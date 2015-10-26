@@ -33,6 +33,7 @@ END
   files = []
   files << 'lib/baby_erubis.rb'
   files << 'lib/baby_erubis/rails.rb'
+  files << 'lib/baby_erubis/renderer.rb'
   files += Dir.glob('test/*.rb')
   files += ['bin/baby_erubis']
   files += %w[README.md MIT-LICENSE setup.rb baby_erubis.gemspec Rakefile]
