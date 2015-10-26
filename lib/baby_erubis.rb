@@ -28,6 +28,10 @@ module BabyErubis
   RELEASE = '$Release: 0.0.0 $'.split(' ')[1]
 
 
+  class TemplateError < StandardError
+  end
+
+
   class Template
 
     FREEZE = (''.freeze).equal?(''.freeze)   # Ruby 2.1 feature

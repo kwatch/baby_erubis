@@ -199,6 +199,67 @@ You can check syntax of Rails template in command-line:
 (TODO: How to use BabyErubis in Ruby on Rails instead of Erubis)
 
 
+Define Rendering Methods
+------------------------
+
+It is very easy to use BabyErubis as template engine in your app or framework,
+because `BabyErubis/Renderer` module defines rendering methods:
+
+    require 'baby_erubis'
+    require 'baby_erubis/renderer'
+
+    class MyController
+      include BabyErubis::HtmlEscaper
+      include BabyErubis::Renderer          # !!!!
+
+      ERUBY_PATH      = ['.']
+      ERUBY_LAYOUT    = :_layout
+      ERUBY_HTML      = BabyErubis::Html
+      ERUBY_HTML_EXT  = '.html.eruby'
+      ERUBY_TEXT      = BabyErubis::Text
+      ERUBY_TEXT_EXT  = '.eruby'
+      ERUBY_CACHE     = {}
+
+      alias render_html eruby_render_html
+      alias render_text eruby_render_text
+
+      def index
+        @items = ['A', 'B', 'C']
+        ## renders 'templates/welcome.html.eruby'
+        html = render_html(:welcome)
+        return html
+      end
+
+    end
+
+`BabyErubis/Renderer` module defines the following methods:
+
+* `eruby_render_html(template_name, layout: true, encoding: 'utf-8')` --
+  renders HTML template with layout template.
+  `layout` keyword argument is layout template name or boolean and use
+  default layout name (= ERUBY_TEMPLATE_LAYOUT) when its value is true.
+* `eruby_render_text(template_name, layout: false, encoding: 'utf-8')` --
+  renders plain template.
+
+Layout template example:
+
+    <%
+        ## you can specify parent layout template name
+        #@_layout = :sitelayout
+    %>
+    <!doctype html>
+    <html>
+      <head>
+        <meta charset="utf-8" />
+        <title><%= @page_title %></title>
+      <head>
+      <body>
+        <div id="main" class="main">
+    <%== @_content %>         ## or <% _buf << @_content %>
+        </div>
+      </body>
+    </html>
+
 
 Customizing
 ===========
