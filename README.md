@@ -1,7 +1,7 @@
 BabyErubis.rb
 =============
 
-$Release: 2.1.0 $
+$Release: 2.1.1 $
 
 BabyErubis is an yet another eRuby implementation, based on Erubis.
 
