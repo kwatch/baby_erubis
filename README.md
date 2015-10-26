@@ -470,4 +470,4 @@ $License: MIT License $
 Copyright
 =========
 
-$Copyright: copyright(c) 2014 kuwata-lab.com all rights reserved $
+$Copyright: copyright(c) 2014-2015 kuwata-lab.com all rights reserved $
