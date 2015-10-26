@@ -3,7 +3,7 @@
 ###
 ### $Release: 0.0.0 $
 ### $License: MIT License $
-### $Copyright: copyright(c) 2014 kuwata-lab.com all rights reserved $
+### $Copyright: copyright(c) 2014-2015 kuwata-lab.com all rights reserved $
 ###
 
 require 'rubygems'
