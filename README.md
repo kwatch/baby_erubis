@@ -430,6 +430,12 @@ Changes
 =======
 
 
+Release 2.1.0 (2015-10-27)
+--------------------------
+
+* [enhance] Add new helper module `BabyErubis::Renderer`
+
+
 Release 2.0.0 (2014-12-09)
 --------------------------
 
