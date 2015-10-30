@@ -36,7 +36,7 @@ Render template string:
 Render template file:
 
     require 'baby_erubis'
-    templat = BabyErubis::Html.new.from_file('example.html.erb', 'utf-8')
+    template = BabyErubis::Html.new.from_file('example.html.erb', 'utf-8')
     context = {:title=>'Example', :items=>['A', 'B', 'C']}
     output = template.render(context)
     print output
