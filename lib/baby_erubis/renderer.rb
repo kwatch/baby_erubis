@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 ###
-### $Release: 0.0.0 $
-### $Copyright: copyright(c) 2014 kuwata-lab.com all rights reserved $
+### $Release: 2.2.0 $
+### $Copyright: copyright(c) 2014-2016 kuwata-lab.com all rights reserved $
 ### $License: MIT License $
 ###
 

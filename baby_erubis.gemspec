@@ -1,9 +1,9 @@
 #!/usr/bin/ruby
 
 ###
-### $Release: 0.0.0 $
+### $Release: 2.2.0 $
 ### $License: MIT License $
-### $Copyright: copyright(c) 2014-2015 kuwata-lab.com all rights reserved $
+### $Copyright: copyright(c) 2014-2016 kuwata-lab.com all rights reserved $
 ###
 
 require 'rubygems'
@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
   s.name        = "baby_erubis"
   s.author      = "makoto kuwata"
   s.email       = "kwa(at)kuwata-lab.com"
-  s.version     = "$Release: 0.0.0 $".split()[1]
+  s.version     = "$Release: 2.2.0 $".split()[1]
   s.license     = "MIT License"
   s.platform    = Gem::Platform::RUBY
   s.homepage    = "https://github.com/kwatch/BabyErubis/tree/ruby"

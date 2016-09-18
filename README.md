@@ -1,7 +1,7 @@
 BabyErubis.rb
 =============
 
-$Release: 0.0.0 $
+$Release: 2.2.0 $
 
 BabyErubis is an yet another eRuby implementation, based on Erubis.
 
@@ -514,4 +514,4 @@ $License: MIT License $
 Copyright
 =========
 
-$Copyright: copyright(c) 2014-2015 kuwata-lab.com all rights reserved $
+$Copyright: copyright(c) 2014-2016 kuwata-lab.com all rights reserved $
