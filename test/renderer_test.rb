@@ -92,8 +92,6 @@ END
   describe '#eruby_render_html()' do
 
     it "renders html template." do
-      obj = HelloClass.new(:items=>[10, 20, 30])
-      actual = obj.eruby_render_html(:'welcome', layout: false)
       expected = <<'END'
 <h1>Example</h1>
 <ul>
@@ -102,6 +100,13 @@ END
   <li>30</li>
 </ul>
 END
+      #
+      obj = HelloClass.new(:items=>[10, 20, 30])
+      actual = obj.eruby_render_html(:'welcome', layout: false)
+      assert_equal expected, actual
+      #
+      obj = HelloClass.new(:items=>[10, 20, 30])
+      actual = obj.eruby_render_html('welcome.html.erb', layout: false)
       assert_equal expected, actual
     end
 
@@ -137,12 +142,17 @@ END
   describe '#eruby_render_text()' do
 
     it "renders text template" do
-      obj = HelloClass.new(:title=>"Homhom", :date=>"2015-01-01")
-      actual = obj.eruby_render_text(:'example.text', layout: false)
       expected = <<'END'
 title: Homhom
 date:  2015-01-01
 END
+      #
+      obj = HelloClass.new(:title=>"Homhom", :date=>"2015-01-01")
+      actual = obj.eruby_render_text(:'example.text', layout: false)
+      assert_equal expected, actual
+      #
+      obj = HelloClass.new(:title=>"Homhom", :date=>"2015-01-01")
+      actual = obj.eruby_render_text('example.text.erb', layout: false)
       assert_equal expected, actual
     end
 

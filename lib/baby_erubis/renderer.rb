@@ -35,6 +35,12 @@ module BabyErubis
   ##   end
   ##
   ##
+  ## Notice:
+  ##
+  ##   eruby_render_html(:welcome)              # render 'welcome.html.eruby'
+  ##   eruby_render_html('welcome')             # render 'welcome'
+  ##   eruby_render_html('welcome.html.eruby')  # render 'welcome.html.eruby'
+  ##
   module Renderer
 
     ERUBY_PATH         = ['.']
@@ -48,7 +54,8 @@ module BabyErubis
     def eruby_render_html(template_name, layout: true, encoding: 'utf-8')
       return _eruby_render_template(template_name, layout) {|tmpl_name|
         ext = self.class.const_get :ERUBY_HTML_EXT
-        _eruby_find_template("#{tmpl_name}#{ext}") {|fpath|
+        filename = tmpl_name.is_a?(Symbol) ? "#{tmpl_name}#{ext}" : tmpl_name
+        _eruby_find_template(filename) {|fpath|
           tmpl_class = self.class.const_get :ERUBY_HTML
           tmpl_class.new.from_file(fpath, encoding)
         }
@@ -58,7 +65,8 @@ module BabyErubis
     def eruby_render_text(template_name, layout: false, encoding: 'utf-8')
       return _eruby_render_template(template_name, layout) {|tmpl_name|
         ext = self.class.const_get :ERUBY_TEXT_EXT
-        _eruby_find_template("#{tmpl_name}#{ext}") {|fpath|
+        filename = tmpl_name.is_a?(Symbol) ? "#{tmpl_name}#{ext}" : tmpl_name
+        _eruby_find_template(filename) {|fpath|
           tmpl_class = self.class.const_get :ERUBY_TEXT
           tmpl_class.new.from_file(fpath, encoding)
         }
