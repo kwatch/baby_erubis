@@ -226,7 +226,7 @@ because `BabyErubis/Renderer` module defines rendering methods:
       def index
         @items = ['A', 'B', 'C']
         ## renders 'templates/welcome.html.eruby'
-        html = render_html(:welcome)
+        html = render_html(:index)   # renders 'index.html.eruby'
         return html
       end
 
@@ -240,6 +240,15 @@ because `BabyErubis/Renderer` module defines rendering methods:
   default layout name (= ERUBY_TEMPLATE_LAYOUT) when its value is true.
 * `eruby_render_text(template_name, layout: false, encoding: 'utf-8')` --
   renders plain template.
+
+Template name can be Symbol or String:
+
+    html = render_html(:foo)              # renders 'foo.html.eruby'
+    html = render_html("foo.html.eruby")  # renders 'foo.html.eruby'
+
+    text = render_text(:foo)              # renders 'foo.eruby'
+    text = render_text(:'foo.txt')        # renders 'foo.txt.eruby'
+    text = render_text("foo.txt.eruby")   # renders 'foo.txt.eruby'
 
 Layout template example:
 
@@ -428,6 +437,29 @@ Todo
 
 Changes
 =======
+
+
+Release 2.2.0 (2016-09-19)
+--------------------------
+
+* [change] `BabyErubis::Renderer#eruby_render_html()` and
+  `#eruby_render_text()` distinguish symbol and string template name:
+
+  ```
+  ## previous
+  html = eruby_render_html(:foo)              # render 'foo.html.eruby'
+  html = eruby_render_html("foo")             # render 'foo.html.eruby'
+  html = eruby_render_html("foo.html.eruby")  # render 'foo.html.eruby.html.eruby'
+
+  ## current
+  html = eruby_render_html(:foo)              # render 'foo.html.eruby'
+  html = eruby_render_html("foo")             # render 'foo'
+  html = eruby_render_html("foo.html.eruby")  # render 'foo.html.eruby'
+
+  text = eruby_render_text(:foo)              # render 'foo.eruby'
+  text = eruby_render_text(:'foo.txt')        # render 'foo.txt.eruby'
+  text = eruby_render_text("foo.txt.eruby")   # render 'foo.txt.eruby'
+  ```
 
 
 Release 2.1.2 (2015-10-30)
