@@ -35,6 +35,28 @@ task :clean do
 end
 
 
+desc "udpate release number"
+task :edit do
+  require_release_number()
+  spec_src = File.open('baby_erubis.gemspec') {|f| f.read }
+  spec = eval spec_src
+  spec.files.each do |fpath|
+    content = File.open(fpath, 'r+b:utf-8') do |f|
+      content = f.read
+      new_content = edit_content(content)
+      if new_content == content
+        puts "[ ] #{fpath}"
+      else
+        puts "[C] #{fpath}"
+        f.rewind()
+        f.truncate(0)
+        f.write(new_content)
+      end
+    end
+  end
+end
+
+
 desc "copy files into 'dist/#{RELEASE}'"
 task :dist => :clean do
   require_release_number()
